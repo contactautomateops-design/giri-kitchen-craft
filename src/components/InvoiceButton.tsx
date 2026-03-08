@@ -55,10 +55,10 @@ const generateInvoiceHTML = (order: Order) => {
 </head>
 <body>
   <div style="max-width:700px;margin:0 auto;padding:30px;">
-    <!-- Print button -->
+    <!-- Download PDF button -->
     <div class="no-print" style="text-align:right;margin-bottom:20px;">
       <button onclick="window.print()" style="padding:10px 24px;background:#e87000;color:white;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
-        🖨️ Print / Save PDF
+        📥 Download PDF
       </button>
     </div>
 
