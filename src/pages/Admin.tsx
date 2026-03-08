@@ -130,7 +130,7 @@ const Admin = () => {
   };
 
   // Manual order helpers
-  const addProductToManual = (product: typeof products[0]) => {
+  const addProductToManual = (product: typeof dbProducts[0]) => {
     setManualOrder(prev => {
       const existing = prev.items.find(i => i.name === product.name);
       if (existing) {
