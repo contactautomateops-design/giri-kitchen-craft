@@ -1,5 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
-import { X, Plus, Minus, ShoppingBag } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { X, Plus, Minus, ShoppingBag, LogIn } from "lucide-react";
 
 interface CartDrawerProps {
   open: boolean;
@@ -9,6 +11,8 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ open, onClose, onCheckout }: CartDrawerProps) => {
   const { items, count, addToCart, removeFromCart, updateQuantity, total } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
