@@ -177,6 +177,10 @@ const Admin = () => {
             className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "coupons" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             <Tag className="w-3.5 h-3.5 inline mr-1.5" /> Coupons
           </button>
+          <button onClick={() => setTab("stock")}
+            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "stock" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+            <BoxesIcon className="w-3.5 h-3.5 inline mr-1.5" /> Stock
+          </button>
         </div>
 
         {tab === "orders" && (
