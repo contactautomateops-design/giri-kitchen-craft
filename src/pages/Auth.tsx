@@ -9,7 +9,7 @@ import { Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft } from "lucide-react";
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "verify-login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -22,17 +22,58 @@ const Auth = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Don't redirect during OTP verification — user must complete verification first
-    if (user && mode !== "verify-signup") navigate("/");
+    if (user && mode !== "verify-signup" && mode !== "verify-login") navigate("/");
   }, [user, navigate, mode]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
-    else navigate("/");
+    setMessage("");
+
+    // First check if user exists by trying to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      setError(signInError.message);
+      setLoading(false);
+      return;
+    }
+
+    // Sign out immediately — we need OTP verification first
+    await supabase.auth.signOut();
+
+    // Generate OTP and send via n8n webhook
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
+
+    const result = await sendSignupOtp(email, otpCode, "User");
+    if (!result.success) {
+      setError(result.error || "Failed to send verification email");
+    } else {
+      setMessage("A verification code has been sent to your email!");
+      setMode("verify-login");
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyLoginOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (otp !== generatedOtp) {
+      setError("Invalid OTP. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // OTP matched — sign in for real
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      setError(loginError.message);
+    } else {
+      navigate("/");
+    }
     setLoading(false);
   };
 
@@ -152,6 +193,7 @@ const Auth = () => {
           <span className="text-3xl">🌿</span>
           <h1 className="font-playfair text-2xl font-bold text-foreground mt-2">
             {mode === "login" && "Welcome Back"}
+            {mode === "verify-login" && "Verify Login"}
             {mode === "signup" && "Create Account"}
             {mode === "verify-signup" && "Verify Email"}
             {mode === "phone" && "Phone Login"}
@@ -295,6 +337,31 @@ const Auth = () => {
                   {loading ? "Verifying..." : "Verify & Create Account"}
                 </button>
                 <button type="button" onClick={handleSignup} disabled={loading}
+                  className="w-full py-2 font-body text-xs text-primary hover:underline">
+                  Resend Code
+                </button>
+              </form>
+            </>
+          )}
+
+          {mode === "verify-login" && (
+            <>
+              <button onClick={() => { setMode("login"); setOtp(""); setError(""); setMessage(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Back to login
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Enter the 6-digit code sent to <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleVerifyLoginOtp} className="space-y-4">
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} required maxLength={6}
+                  className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm text-center tracking-[0.5em] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                  placeholder="------" />
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Verifying..." : "Verify & Sign In"}
+                </button>
+                <button type="button" onClick={handleEmailLogin} disabled={loading}
                   className="w-full py-2 font-body text-xs text-primary hover:underline">
                   Resend Code
                 </button>
