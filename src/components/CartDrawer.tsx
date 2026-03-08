@@ -1,5 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
-import { X, Plus, Minus, ShoppingBag } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { X, Plus, Minus, ShoppingBag, LogIn } from "lucide-react";
 
 interface CartDrawerProps {
   open: boolean;
@@ -9,6 +11,8 @@ interface CartDrawerProps {
 
 const CartDrawer = ({ open, onClose, onCheckout }: CartDrawerProps) => {
   const { items, count, addToCart, removeFromCart, updateQuantity, total } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   if (!open) return null;
 
@@ -78,12 +82,21 @@ const CartDrawer = ({ open, onClose, onCheckout }: CartDrawerProps) => {
               <span className="font-body font-semibold text-sm text-foreground">Total</span>
               <span className="font-playfair font-bold text-xl text-primary">₹{total}</span>
             </div>
-            <button
-              onClick={onCheckout}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25"
-            >
-              Proceed to Checkout →
-            </button>
+            {user ? (
+              <button
+                onClick={onCheckout}
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25"
+              >
+                Proceed to Checkout →
+              </button>
+            ) : (
+              <button
+                onClick={() => { onClose(); navigate("/auth"); }}
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
+              >
+                <LogIn className="w-4 h-4" /> Sign In to Checkout
+              </button>
+            )}
           </div>
         )}
       </div>
