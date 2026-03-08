@@ -18,6 +18,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [deliveryMode, setDeliveryMode] = useState<"delivery" | "pickup">("delivery");
   const [upiId, setUpiId] = useState("");
   const [processing, setProcessing] = useState(false);
   const [couponCode, setCouponCode] = useState("");

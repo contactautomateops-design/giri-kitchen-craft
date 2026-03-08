@@ -22,6 +22,31 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const AppLayout = () => {
+  const location = useLocation();
+  const hideChrome = ["/auth", "/reset-password"].includes(location.pathname);
+
+  return (
+    <>
+      <ScrollProgress />
+      {!hideChrome && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {!hideChrome && <Footer />}
+      <WhatsAppButton />
+      <ScrollToTop />
+    </>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -30,21 +55,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <ScrollProgress />
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Footer />
-            <WhatsAppButton />
-            <ScrollToTop />
+            <AppLayout />
           </BrowserRouter>
         </CartProvider>
       </AuthProvider>
