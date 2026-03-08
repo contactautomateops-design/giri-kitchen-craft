@@ -296,9 +296,9 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                   </div>
                 </div>
 
-                <button type="submit"
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25">
-                  {user ? "Continue to Payment →" : "Sign In to Continue →"}
+                <button type="submit" disabled={processing}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {!user ? "Sign In to Continue →" : processing ? "Placing Order..." : paymentMethod === "cash" ? "Place Order (Pay at Store) →" : "Continue to Payment →"}
                 </button>
               </form>
             )}
