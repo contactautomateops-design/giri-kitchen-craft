@@ -68,6 +68,56 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     setCouponError("");
   };
 
+  const saveOrder = async (upi: string | null) => {
+    if (!user) return;
+    const { data: order } = await supabase.from("orders").insert({
+      user_id: user.id,
+      subtotal: total,
+      discount,
+      total: finalTotal,
+      coupon_code: couponApplied ? couponCode.toUpperCase() : null,
+      customer_name: name,
+      customer_phone: phone,
+      delivery_address: deliveryMode === "pickup" ? "STORE PICKUP" : address,
+      upi_id: upi,
+      status: paymentMethod === "cash" ? "confirmed" : "pending",
+    }).select().single();
+
+    if (order) {
+      const orderItemsData = items.map(item => ({
+        order_id: order.id,
+        product_name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+      await supabase.from("order_items").insert(orderItemsData);
+
+      if (couponApplied) {
+        await supabase.rpc("increment_coupon_usage" as any, { coupon_code: couponCode.toUpperCase() });
+      }
+
+      const { sendOrderConfirmationEmail, sendOrderNotificationToSeller } = await import("@/lib/n8n");
+      const emailItems = items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }));
+      sendOrderConfirmationEmail({
+        customerEmail: user.email || "",
+        customerName: name,
+        orderId: order.id,
+        items: emailItems,
+        total: finalTotal,
+        discount,
+        deliveryAddress: deliveryMode === "pickup" ? "STORE PICKUP" : address,
+      });
+      sendOrderNotificationToSeller({
+        customerName: name,
+        customerPhone: phone,
+        orderId: order.id,
+        items: emailItems,
+        total: finalTotal,
+        deliveryAddress: deliveryMode === "pickup" ? "STORE PICKUP" : address,
+      });
+    }
+  };
+
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -75,7 +125,19 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
       navigate("/auth");
       return;
     }
-    setStep("upi");
+    if (paymentMethod === "cash") {
+      handleCashPayment();
+    } else {
+      setStep("upi");
+    }
+  };
+
+  const handleCashPayment = async () => {
+    setProcessing(true);
+    await saveOrder(null);
+    setProcessing(false);
+    setStep("success");
+    clearCart();
   };
 
   const handlePayment = async (e: React.FormEvent) => {
