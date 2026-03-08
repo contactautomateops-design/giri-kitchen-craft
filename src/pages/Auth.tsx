@@ -266,6 +266,7 @@ const Auth = () => {
             {mode === "forgot" && "Reset Password"}
             {mode === "verify-forgot" && "Verify Email"}
             {mode === "new-password" && "New Password"}
+          </h1>
           <p className="font-body text-sm text-muted-foreground mt-1">Giri Food Productions</p>
         </div>
 
