@@ -15,6 +15,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<"details" | "upi" | "success">("details");
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "cash">("upi");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -67,6 +68,56 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     setCouponError("");
   };
 
+  const saveOrder = async (upi: string | null) => {
+    if (!user) return;
+    const { data: order } = await supabase.from("orders").insert({
+      user_id: user.id,
+      subtotal: total,
+      discount,
+      total: finalTotal,
+      coupon_code: couponApplied ? couponCode.toUpperCase() : null,
+      customer_name: name,
+      customer_phone: phone,
+      delivery_address: deliveryMode === "pickup" ? "STORE PICKUP" : address,
+      upi_id: upi,
+      status: paymentMethod === "cash" ? "confirmed" : "pending",
+    }).select().single();
+
+    if (order) {
+      const orderItemsData = items.map(item => ({
+        order_id: order.id,
+        product_name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      }));
+      await supabase.from("order_items").insert(orderItemsData);
+
+      if (couponApplied) {
+        await supabase.rpc("increment_coupon_usage" as any, { coupon_code: couponCode.toUpperCase() });
+      }
+
+      const { sendOrderConfirmationEmail, sendOrderNotificationToSeller } = await import("@/lib/n8n");
+      const emailItems = items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }));
+      sendOrderConfirmationEmail({
+        customerEmail: user.email || "",
+        customerName: name,
+        orderId: order.id,
+        items: emailItems,
+        total: finalTotal,
+        discount,
+        deliveryAddress: deliveryMode === "pickup" ? "STORE PICKUP" : address,
+      });
+      sendOrderNotificationToSeller({
+        customerName: name,
+        customerPhone: phone,
+        orderId: order.id,
+        items: emailItems,
+        total: finalTotal,
+        deliveryAddress: deliveryMode === "pickup" ? "STORE PICKUP" : address,
+      });
+    }
+  };
+
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -74,7 +125,19 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
       navigate("/auth");
       return;
     }
-    setStep("upi");
+    if (paymentMethod === "cash") {
+      handleCashPayment();
+    } else {
+      setStep("upi");
+    }
+  };
+
+  const handleCashPayment = async () => {
+    setProcessing(true);
+    await saveOrder(null);
+    setProcessing(false);
+    setStep("success");
+    clearCart();
   };
 
   const handlePayment = async (e: React.FormEvent) => {
@@ -84,60 +147,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     const upiPaymentUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("Giri Food Productions")}&am=${finalTotal}&cu=INR&tn=${encodeURIComponent(`Order from Giri Food Productions`)}`;
     window.open(upiPaymentUrl, "_blank");
 
-    // Save order to database
-    if (user) {
-      const { data: order } = await supabase.from("orders").insert({
-        user_id: user.id,
-        subtotal: total,
-        discount,
-        total: finalTotal,
-        coupon_code: couponApplied ? couponCode.toUpperCase() : null,
-        customer_name: name,
-        customer_phone: phone,
-        delivery_address: deliveryMode === "pickup" ? "STORE PICKUP" : address,
-        upi_id: upiId,
-      }).select().single();
-
-      if (order) {
-        const orderItemsData = items.map(item => ({
-          order_id: order.id,
-          product_name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        }));
-        await supabase.from("order_items").insert(orderItemsData);
-
-        // Increment coupon usage
-        if (couponApplied) {
-          await supabase.rpc("increment_coupon_usage" as any, { coupon_code: couponCode.toUpperCase() });
-        }
-
-        // Send email notifications via n8n webhooks
-        const { sendOrderConfirmationEmail, sendOrderNotificationToSeller } = await import("@/lib/n8n");
-        const emailItems = items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }));
-
-        // Email to customer
-        sendOrderConfirmationEmail({
-          customerEmail: user.email || "",
-          customerName: name,
-          orderId: order.id,
-          items: emailItems,
-          total: finalTotal,
-          discount,
-          deliveryAddress: address,
-        });
-
-        // Notification to seller
-        sendOrderNotificationToSeller({
-          customerName: name,
-          customerPhone: phone,
-          orderId: order.id,
-          items: emailItems,
-          total: finalTotal,
-          deliveryAddress: address,
-        });
-      }
-    }
+    await saveOrder(upiId);
 
     setTimeout(() => {
       setProcessing(false);
@@ -157,6 +167,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     setCouponApplied(false);
     setCouponError("");
     setDeliveryMode("delivery");
+    setPaymentMethod("upi");
     onClose();
   };
 
@@ -202,7 +213,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                 <div>
                   <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Delivery Option</label>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setDeliveryMode("delivery")}
+                    <button type="button" onClick={() => { setDeliveryMode("delivery"); setPaymentMethod("upi"); }}
                       className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${deliveryMode === "delivery" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
                       🚚 Home Delivery
                     </button>
@@ -224,6 +235,23 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                     <p className="font-body text-xs text-foreground font-semibold mb-1">📍 Store Address</p>
                     <p className="font-body text-xs text-muted-foreground">Giri Food Productions, Main Road, Your City</p>
                     <p className="font-body text-[10px] text-muted-foreground mt-1">You'll be notified when your order is ready for pickup.</p>
+                  </div>
+                )}
+
+                {/* Payment Method - show cash option for store pickup */}
+                {deliveryMode === "pickup" && (
+                  <div>
+                    <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Payment Method</label>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setPaymentMethod("upi")}
+                        className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${paymentMethod === "upi" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                        📱 UPI Payment
+                      </button>
+                      <button type="button" onClick={() => setPaymentMethod("cash")}
+                        className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${paymentMethod === "cash" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                        💵 Cash at Store
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -268,9 +296,9 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                   </div>
                 </div>
 
-                <button type="submit"
-                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25">
-                  {user ? "Continue to Payment →" : "Sign In to Continue →"}
+                <button type="submit" disabled={processing}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {!user ? "Sign In to Continue →" : processing ? "Placing Order..." : paymentMethod === "cash" ? "Place Order (Pay at Store) →" : "Continue to Payment →"}
                 </button>
               </form>
             )}
