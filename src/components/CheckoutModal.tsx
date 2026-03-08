@@ -98,19 +98,43 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
       }).select().single();
 
       if (order) {
-        await supabase.from("order_items").insert(
-          items.map(item => ({
-            order_id: order.id,
-            product_name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-          }))
-        );
+        const orderItemsData = items.map(item => ({
+          order_id: order.id,
+          product_name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        }));
+        await supabase.from("order_items").insert(orderItemsData);
 
         // Increment coupon usage
         if (couponApplied) {
           await supabase.rpc("increment_coupon_usage" as any, { coupon_code: couponCode.toUpperCase() });
         }
+
+        // Send email notifications via n8n webhooks
+        const { sendOrderConfirmationEmail, sendOrderNotificationToSeller } = await import("@/lib/n8n");
+        const emailItems = items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }));
+
+        // Email to customer
+        sendOrderConfirmationEmail({
+          customerEmail: user.email || "",
+          customerName: name,
+          orderId: order.id,
+          items: emailItems,
+          total: finalTotal,
+          discount,
+          deliveryAddress: address,
+        });
+
+        // Notification to seller
+        sendOrderNotificationToSeller({
+          customerName: name,
+          customerPhone: phone,
+          orderId: order.id,
+          items: emailItems,
+          total: finalTotal,
+          deliveryAddress: address,
+        });
       }
     }
 
