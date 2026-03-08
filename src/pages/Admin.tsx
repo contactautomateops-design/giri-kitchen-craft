@@ -10,9 +10,12 @@ const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { inventory, refetch: refetchInventory } = useInventory();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"coupons" | "orders" | "stock">("orders");
+  const [tab, setTab] = useState<"coupons" | "orders" | "stock" | "users">("orders");
   const [coupons, setCoupons] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  const [userOrders, setUserOrders] = useState<Record<string, any[]>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [showManualOrder, setShowManualOrder] = useState(false);
   const [newCoupon, setNewCoupon] = useState({ code: "", discount_percent: 0, discount_amount: 0, min_order_amount: 0, max_uses: 100 });
