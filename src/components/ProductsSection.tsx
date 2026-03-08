@@ -1,10 +1,11 @@
-import { products } from "@/data/products";
 import ProductCard from "./ProductCard";
 import { Link } from "react-router-dom";
 import { useInventory } from "@/hooks/useInventory";
+import { useProducts } from "@/hooks/useProducts";
 
 const ProductsSection = () => {
   const { getStock } = useInventory();
+  const { activeProducts, loading } = useProducts();
 
   return (
     <section id="products" className="py-24 bg-background">
@@ -21,11 +22,33 @@ const ProductsSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product, i) => (
-            <ProductCard key={product.id} product={product} delay={i * 80} stock={getStock(product.name)} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="font-body text-sm text-muted-foreground">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeProducts.map((product, i) => (
+              <ProductCard
+                key={product.id}
+                product={{
+                  id: i + 1,
+                  name: product.name,
+                  weight: product.weight,
+                  price: product.price,
+                  mrp: product.mrp,
+                  emoji: product.emoji,
+                  accent: product.accent,
+                  badge: product.badge,
+                  category: product.category,
+                  image: product.image_url || "/placeholder.svg",
+                }}
+                delay={i * 80}
+                stock={getStock(product.name)}
+              />
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-14" data-aos="fade-up">
           <Link

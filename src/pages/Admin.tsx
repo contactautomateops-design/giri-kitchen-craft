@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useInventory } from "@/hooks/useInventory";
-import { products } from "@/data/products";
-import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { useProducts } from "@/hooks/useProducts";
+import AdminProducts from "@/components/AdminProducts";
+import AdminAnalytics from "@/components/AdminAnalytics";
+import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp, ShoppingBag, BarChart3 } from "lucide-react";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { inventory, refetch: refetchInventory } = useInventory();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"coupons" | "orders" | "stock" | "users">("orders");
+  const [tab, setTab] = useState<"orders" | "coupons" | "stock" | "users" | "products" | "analytics">("orders");
+  const { products: dbProducts, refetch: refetchProducts } = useProducts();
   const [coupons, setCoupons] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -127,7 +130,7 @@ const Admin = () => {
   };
 
   // Manual order helpers
-  const addProductToManual = (product: typeof products[0]) => {
+  const addProductToManual = (product: typeof dbProducts[0]) => {
     setManualOrder(prev => {
       const existing = prev.items.find(i => i.name === product.name);
       if (existing) {
@@ -192,23 +195,20 @@ const Admin = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="font-playfair text-2xl font-bold text-foreground mb-6">Admin Dashboard</h1>
 
-        <div className="flex gap-2 mb-6">
-          <button onClick={() => setTab("orders")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "orders" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <Package className="w-3.5 h-3.5 inline mr-1.5" /> Orders
-          </button>
-          <button onClick={() => setTab("coupons")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "coupons" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <Tag className="w-3.5 h-3.5 inline mr-1.5" /> Coupons
-          </button>
-          <button onClick={() => setTab("stock")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "stock" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <BoxesIcon className="w-3.5 h-3.5 inline mr-1.5" /> Stock
-          </button>
-          <button onClick={() => setTab("users")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "users" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <Users className="w-3.5 h-3.5 inline mr-1.5" /> Users ({profiles.length})
-          </button>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {([
+            { key: "orders", icon: Package, label: "Orders" },
+            { key: "products", icon: ShoppingBag, label: "Products" },
+            { key: "analytics", icon: BarChart3, label: "Analytics" },
+            { key: "coupons", icon: Tag, label: "Coupons" },
+            { key: "stock", icon: BoxesIcon, label: "Stock" },
+            { key: "users", icon: Users, label: `Users (${profiles.length})` },
+          ] as const).map(t => (
+            <button key={t.key} onClick={() => setTab(t.key as any)}
+              className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === t.key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+              <t.icon className="w-3.5 h-3.5 inline mr-1.5" /> {t.label}
+            </button>
+          ))}
         </div>
 
         {tab === "orders" && (
@@ -273,7 +273,7 @@ const Admin = () => {
                 <div>
                   <label className="font-body text-[10px] font-semibold text-foreground block mb-2">Add Products</label>
                   <div className="flex flex-wrap gap-2">
-                    {products.map(p => (
+                    {dbProducts.filter(p => p.is_active).map(p => (
                       <button key={p.id} type="button" onClick={() => addProductToManual(p)}
                         className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 font-body text-xs transition-colors">
                         {p.emoji} {p.name} — ₹{p.price}
@@ -528,6 +528,12 @@ const Admin = () => {
               </div>
             ))}
           </div>
+        )}
+        {tab === "products" && (
+          <AdminProducts products={dbProducts} onRefresh={refetchProducts} />
+        )}
+        {tab === "analytics" && (
+          <AdminAnalytics orders={orders} />
         )}
       </div>
     </div>
