@@ -122,7 +122,26 @@ const Admin = () => {
 
   const updateOrderStatus = async (id: string, status: string) => {
     await supabase.from("orders").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
+    // Send email notification
+    try {
+      await supabase.functions.invoke("order-notification", {
+        body: { order_id: id, type: status === "confirmed" ? "confirmation" : status },
+      });
+    } catch (e) {
+      console.log("Notification skipped:", e);
+    }
     fetchOrders();
+  };
+
+  const sendNotification = async (orderId: string, type: string) => {
+    try {
+      await supabase.functions.invoke("order-notification", {
+        body: { order_id: orderId, type },
+      });
+      alert(`📧 ${type} notification sent!`);
+    } catch (e) {
+      console.error("Notification error:", e);
+    }
   };
 
   const updateStock = async (productName: string, newStock: number) => {
