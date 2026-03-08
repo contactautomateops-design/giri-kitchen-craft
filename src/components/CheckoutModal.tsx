@@ -147,60 +147,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     const upiPaymentUrl = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("Giri Food Productions")}&am=${finalTotal}&cu=INR&tn=${encodeURIComponent(`Order from Giri Food Productions`)}`;
     window.open(upiPaymentUrl, "_blank");
 
-    // Save order to database
-    if (user) {
-      const { data: order } = await supabase.from("orders").insert({
-        user_id: user.id,
-        subtotal: total,
-        discount,
-        total: finalTotal,
-        coupon_code: couponApplied ? couponCode.toUpperCase() : null,
-        customer_name: name,
-        customer_phone: phone,
-        delivery_address: deliveryMode === "pickup" ? "STORE PICKUP" : address,
-        upi_id: upiId,
-      }).select().single();
-
-      if (order) {
-        const orderItemsData = items.map(item => ({
-          order_id: order.id,
-          product_name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        }));
-        await supabase.from("order_items").insert(orderItemsData);
-
-        // Increment coupon usage
-        if (couponApplied) {
-          await supabase.rpc("increment_coupon_usage" as any, { coupon_code: couponCode.toUpperCase() });
-        }
-
-        // Send email notifications via n8n webhooks
-        const { sendOrderConfirmationEmail, sendOrderNotificationToSeller } = await import("@/lib/n8n");
-        const emailItems = items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price }));
-
-        // Email to customer
-        sendOrderConfirmationEmail({
-          customerEmail: user.email || "",
-          customerName: name,
-          orderId: order.id,
-          items: emailItems,
-          total: finalTotal,
-          discount,
-          deliveryAddress: address,
-        });
-
-        // Notification to seller
-        sendOrderNotificationToSeller({
-          customerName: name,
-          customerPhone: phone,
-          orderId: order.id,
-          items: emailItems,
-          total: finalTotal,
-          deliveryAddress: address,
-        });
-      }
-    }
+    await saveOrder(upiId);
 
     setTimeout(() => {
       setProcessing(false);
@@ -220,6 +167,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     setCouponApplied(false);
     setCouponError("");
     setDeliveryMode("delivery");
+    setPaymentMethod("upi");
     onClose();
   };
 
