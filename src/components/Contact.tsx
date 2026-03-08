@@ -63,7 +63,7 @@ const Contact = () => {
               </div>
             ))}
             <a
-              href="https://wa.me/919800000000"
+              href="https://wa.me/917878773477"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#25D366] text-white font-body font-semibold text-sm hover:scale-105 transition-all mt-2 shadow-lg shadow-[#25D366]/25"
