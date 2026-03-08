@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { User, Phone, MapPin, Package, LogOut } from "lucide-react";
+import InvoiceButton from "@/components/InvoiceButton";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();

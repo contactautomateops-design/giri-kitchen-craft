@@ -367,8 +367,16 @@ const Admin = () => {
                     ))}
                   </div>
                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-border">
-                    {order.discount > 0 && <span className="font-body text-[10px] text-green-600">-₹{order.discount} ({order.coupon_code})</span>}
-                    <span className="font-body font-bold text-sm text-primary ml-auto">₹{order.total}</span>
+                    <div className="flex items-center gap-2">
+                      {order.discount > 0 && <span className="font-body text-[10px] text-green-600">-₹{order.discount} ({order.coupon_code})</span>}
+                      <InvoiceButton order={order} size="xs" />
+                      <button onClick={() => sendNotification(order.id, "confirmation")}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-border font-body text-[10px] hover:bg-secondary transition-colors"
+                        title="Send email notification">
+                        <Mail className="w-3 h-3" /> Notify
+                      </button>
+                    </div>
+                    <span className="font-body font-bold text-sm text-primary">₹{order.total}</span>
                   </div>
                 </div>
               ))}
