@@ -6,7 +6,8 @@ import { useInventory } from "@/hooks/useInventory";
 import { useProducts } from "@/hooks/useProducts";
 import AdminProducts from "@/components/AdminProducts";
 import AdminAnalytics from "@/components/AdminAnalytics";
-import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp, ShoppingBag, BarChart3 } from "lucide-react";
+import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp, ShoppingBag, BarChart3, Mail } from "lucide-react";
+import InvoiceButton from "@/components/InvoiceButton";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
