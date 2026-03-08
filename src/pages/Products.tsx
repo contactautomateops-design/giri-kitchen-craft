@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { products } from "@/data/products";
 import ProductCard from "@/components/ProductCard";
 import { useInventory } from "@/hooks/useInventory";
-
-const filters = [
-  { label: "All", value: "all" },
-  { label: "Oils", value: "oils" },
-  { label: "Spices", value: "spices" },
-];
+import { useProducts } from "@/hooks/useProducts";
 
 const Products = () => {
   const [active, setActive] = useState("all");
   const { getStock } = useInventory();
+  const { activeProducts, loading } = useProducts();
+
+  // Derive categories dynamically
+  const categories = Array.from(new Set(activeProducts.map(p => p.category)));
+  const filters = [
+    { label: "All", value: "all" },
+    ...categories.map(c => ({ label: c.charAt(0).toUpperCase() + c.slice(1), value: c })),
+  ];
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, offset: 80, easing: "ease-out-cubic" });
     window.scrollTo(0, 0);
   }, []);
 
-  const filtered = active === "all" ? products : products.filter(p => p.category === active);
+  const filtered = active === "all" ? activeProducts : activeProducts.filter(p => p.category === active);
 
   return (
     <div className="pt-24 pb-20 bg-background min-h-screen">
@@ -53,11 +55,33 @@ const Products = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((product, i) => (
-            <ProductCard key={product.id} product={product} delay={i * 80} stock={getStock(product.name)} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="font-body text-sm text-muted-foreground">Loading products...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((product, i) => (
+              <ProductCard
+                key={product.id}
+                product={{
+                  id: i + 1,
+                  name: product.name,
+                  weight: product.weight,
+                  price: product.price,
+                  mrp: product.mrp,
+                  emoji: product.emoji,
+                  accent: product.accent,
+                  badge: product.badge,
+                  category: product.category,
+                  image: product.image_url || "/placeholder.svg",
+                }}
+                delay={i * 80}
+                stock={getStock(product.name)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
