@@ -22,8 +22,9 @@ const Auth = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
+    // Don't redirect during OTP verification — user must complete verification first
+    if (user && mode !== "verify-signup") navigate("/");
+  }, [user, navigate, mode]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
