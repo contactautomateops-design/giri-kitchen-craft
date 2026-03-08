@@ -213,7 +213,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                 <div>
                   <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Delivery Option</label>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => setDeliveryMode("delivery")}
+                    <button type="button" onClick={() => { setDeliveryMode("delivery"); setPaymentMethod("upi"); }}
                       className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${deliveryMode === "delivery" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
                       🚚 Home Delivery
                     </button>
