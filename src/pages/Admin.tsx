@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useInventory } from "@/hooks/useInventory";
 import { products } from "@/data/products";
-import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon } from "lucide-react";
+import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp } from "lucide-react";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
