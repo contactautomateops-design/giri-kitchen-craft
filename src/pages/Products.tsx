@@ -24,7 +24,7 @@ const Products = () => {
     <div className="pt-24 pb-20 bg-background min-h-screen">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12" data-aos="fade-up">
-          <span className="inline-block px-3 py-1 rounded-full border border-border text-muted-foreground font-body font-medium text-xs tracking-widest uppercase mb-4">
+          <span className="inline-block px-3 py-1.5 rounded-full bg-primary/10 text-primary font-body font-semibold text-xs tracking-widest uppercase mb-4">
             Our Products
           </span>
           <h1 className="font-playfair text-4xl sm:text-5xl font-bold text-foreground">
@@ -42,7 +42,7 @@ const Products = () => {
               onClick={() => setActive(f.value)}
               className={`px-5 py-2 rounded-full font-body font-medium text-xs tracking-wide transition-all ${
                 active === f.value
-                  ? "bg-foreground text-background"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "bg-secondary text-muted-foreground hover:bg-secondary/80"
               }`}
             >
@@ -51,7 +51,7 @@ const Products = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((product, i) => (
             <ProductCard key={product.id} product={product} delay={i * 80} />
           ))}

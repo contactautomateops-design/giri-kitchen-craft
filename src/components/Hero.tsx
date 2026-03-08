@@ -15,23 +15,27 @@ const Hero = () => {
         .fromTo(".hero-sub", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 1.0)
         .fromTo(".hero-ctas", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 1.2)
         .fromTo(".hero-trust", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, 1.4)
-        .fromTo(".hero-right", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.8 }, 0.6);
+        .fromTo(".hero-right", { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 1 }, 0.4);
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
   const particles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    size: Math.random() * 4 + 2,
+    size: Math.random() * 5 + 3,
     left: Math.random() * 100,
     top: Math.random() * 100,
-    color: ["#e5e5e5", "#d4d4d4", "#a3a3a3"][Math.floor(Math.random() * 3)],
+    color: ["hsl(28, 90%, 50%)", "hsl(42, 85%, 55%)", "hsl(20, 40%, 60%)"][Math.floor(Math.random() * 3)],
     duration: Math.random() * 4 + 3,
     delay: Math.random() * 5,
   }));
 
   return (
-    <section ref={heroRef} className="hero-gradient relative min-h-screen flex items-center overflow-hidden border-b border-border">
+    <section ref={heroRef} className="hero-gradient relative min-h-screen flex items-center overflow-hidden">
+      {/* Warm decorative blurs */}
+      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-accent/10 blur-[80px] pointer-events-none" />
+
       {/* Subtle particles */}
       {particles.map(p => (
         <div
@@ -51,15 +55,15 @@ const Hero = () => {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-[55%_45%] items-center gap-12 py-20 pt-28">
         <div>
-          <div className="hero-badge opacity-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border mb-8">
+          <div className="hero-badge opacity-0 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
             <span className="text-xs">🌿</span>
-            <span className="text-xs font-body font-medium text-muted-foreground tracking-wide">100% Natural & Pure</span>
+            <span className="text-xs font-body font-semibold text-primary tracking-wide">100% Natural & Pure</span>
           </div>
 
           <h1 className="hero-line-1 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1]">
             Pure Oils.
           </h1>
-          <h1 className="hero-line-2 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-muted-foreground leading-[1.1] mt-1">
+          <h1 className="hero-line-2 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-accent leading-[1.1] mt-1">
             Honest Spices.
           </h1>
           <h1 className="hero-line-3 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground italic leading-[1.1] mt-1">
@@ -73,7 +77,7 @@ const Hero = () => {
           <div className="hero-ctas opacity-0 flex flex-wrap gap-3 mt-8">
             <Link
               to="/products"
-              className="inline-flex items-center px-7 py-3 rounded-full bg-foreground text-background font-body font-semibold text-sm hover:bg-foreground/90 transition-all"
+              className="inline-flex items-center px-7 py-3 rounded-full bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25"
             >
               Shop Now →
             </Link>
@@ -87,41 +91,46 @@ const Hero = () => {
 
           <div className="hero-trust opacity-0 flex flex-wrap items-center gap-4 mt-10 text-xs text-muted-foreground font-body tracking-wide">
             <span>✅ No Preservatives</span>
-            <span className="text-border">·</span>
+            <span className="text-primary/30">·</span>
             <span>🧪 Lab Tested</span>
-            <span className="text-border">·</span>
+            <span className="text-primary/30">·</span>
             <span>🚚 Pan India Delivery</span>
           </div>
         </div>
 
-        {/* Right side */}
+        {/* Right side - Hero Image */}
         <div className="hero-right opacity-0 hidden lg:flex items-center justify-center relative">
-          <div className="w-72 h-72 xl:w-80 xl:h-80 rounded-full bg-secondary flex items-center justify-center relative border border-border">
-            <div className="animate-float-bob text-[80px] leading-none select-none">🫙</div>
-            <span className="absolute top-[-10px] text-3xl animate-float-bob" style={{ animationDelay: "0.5s" }}>🌶️</span>
-            <span className="absolute bottom-[-10px] text-2xl animate-float-bob" style={{ animationDelay: "1s" }}>🌿</span>
-
-            {["🌱", "🥜", "🌻", "🥥"].map((icon, i) => (
-              <span
-                key={i}
-                className="absolute text-xl"
-                style={{
-                  animation: `orbit 10s linear infinite`,
-                  animationDelay: `${i * -2.5}s`,
-                  top: "50%",
-                  left: "50%",
-                  marginTop: "-12px",
-                  marginLeft: "-12px",
-                }}
-              >
-                {icon}
-              </span>
-            ))}
+          <div className="relative w-full max-w-md">
+            <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl transform rotate-3" />
+            <img
+              src="/images/hero-banner.jpg"
+              alt="Premium cold-pressed oils and stone-ground spices"
+              className="relative rounded-3xl shadow-2xl shadow-primary/15 w-full h-auto object-cover"
+            />
+            {/* Floating badges */}
+            <div className="absolute -top-4 -right-4 bg-background rounded-2xl shadow-lg p-3 border border-border animate-float-bob">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🌿</span>
+                <div>
+                  <div className="font-body font-bold text-xs text-foreground">100%</div>
+                  <div className="font-body text-[10px] text-muted-foreground">Natural</div>
+                </div>
+              </div>
+            </div>
+            <div className="absolute -bottom-4 -left-4 bg-background rounded-2xl shadow-lg p-3 border border-border animate-float-bob" style={{ animationDelay: "1s" }}>
+              <div className="flex items-center gap-2">
+                <span className="text-xl">⭐</span>
+                <div>
+                  <div className="font-body font-bold text-xs text-foreground">5000+</div>
+                  <div className="font-body text-[10px] text-muted-foreground">Happy Families</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-muted-foreground/40 animate-bounce-arrow">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-primary/40 animate-bounce-arrow">
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" /></svg>
       </div>
     </section>

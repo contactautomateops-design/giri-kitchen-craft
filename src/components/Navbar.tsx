@@ -53,7 +53,7 @@ const Navbar = () => {
                 to={link.href}
                 onClick={() => handleNavClick(link.href)}
                 className={`nav-link-underline font-body font-medium text-xs tracking-widest uppercase transition-colors text-muted-foreground hover:text-foreground ${
-                  location.pathname === link.href ? "!text-foreground" : ""
+                  location.pathname === link.href ? "!text-primary" : ""
                 }`}
               >
                 {link.label}
@@ -65,14 +65,14 @@ const Navbar = () => {
             <button className="relative p-1">
               <ShoppingCart className="w-4 h-4 text-foreground" />
               {count > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-foreground text-background text-[10px] flex items-center justify-center font-bold">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center font-bold">
                   {count}
                 </span>
               )}
             </button>
             <Link
               to="/products"
-              className="hidden sm:inline-flex items-center px-5 py-2 rounded-full bg-foreground text-background font-body font-medium text-xs tracking-wide hover:bg-foreground/90 transition-all"
+              className="hidden sm:inline-flex items-center px-5 py-2 rounded-full bg-primary text-primary-foreground font-body font-medium text-xs tracking-wide hover:brightness-110 transition-all shadow-md shadow-primary/20"
             >
               Order Now
             </Link>
@@ -97,7 +97,7 @@ const Navbar = () => {
               key={link.label}
               to={link.href}
               onClick={() => handleNavClick(link.href)}
-              className="block font-body font-medium text-sm py-2 text-muted-foreground hover:text-foreground"
+              className="block font-body font-medium text-sm py-2 text-muted-foreground hover:text-primary"
             >
               {link.label}
             </Link>

@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 8%;
-    --card: 0 0% 99%;
-    --card-foreground: 0 0% 8%;
-    --popover: 0 0% 99%;
-    --popover-foreground: 0 0% 8%;
-    --primary: 0 0% 10%;
+    --background: 30 50% 98%;
+    --foreground: 20 40% 12%;
+    --card: 32 40% 97%;
+    --card-foreground: 20 40% 12%;
+    --popover: 32 40% 97%;
+    --popover-foreground: 20 40% 12%;
+    --primary: 28 90% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 10%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 10%;
+    --secondary: 35 40% 93%;
+    --secondary-foreground: 20 40% 15%;
+    --muted: 30 25% 92%;
+    --muted-foreground: 20 15% 46%;
+    --accent: 42 85% 55%;
+    --accent-foreground: 20 40% 12%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 10%;
+    --border: 30 20% 87%;
+    --input: 30 20% 87%;
+    --ring: 28 90% 50%;
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-background: 30 30% 96%;
+    --sidebar-foreground: 20 30% 26%;
+    --sidebar-primary: 20 40% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 30 25% 94%;
+    --sidebar-accent-foreground: 20 40% 10%;
+    --sidebar-border: 30 15% 88%;
+    --sidebar-ring: 28 90% 50%;
   }
 }
 
@@ -57,8 +57,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 2px;
-  background: hsl(var(--foreground));
+  height: 3px;
+  background: hsl(var(--primary));
   z-index: 10000;
   transition: width 0.1s linear;
 }
@@ -68,9 +68,9 @@
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.85) !important;
+  background: hsla(30, 50%, 98%, 0.92) !important;
   backdrop-filter: blur(20px);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 0 rgba(139, 90, 43, 0.08);
 }
 
 /* Underline hover effect */
@@ -82,10 +82,10 @@
   position: absolute;
   width: 100%;
   transform: scaleX(0);
-  height: 1px;
+  height: 1.5px;
   bottom: -4px;
   left: 0;
-  background: currentColor;
+  background: hsl(var(--primary));
   transform-origin: bottom right;
   transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -96,7 +96,7 @@
 
 /* Hero */
 .hero-gradient {
-  background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+  background: linear-gradient(180deg, hsl(30, 50%, 97%) 0%, hsl(30, 50%, 98%) 100%);
 }
 
 /* Floating animations */
@@ -172,8 +172,8 @@
     45deg,
     transparent,
     transparent 40px,
-    rgba(0, 0, 0, 0.01) 40px,
-    rgba(0, 0, 0, 0.01) 42px
+    hsla(30, 40%, 50%, 0.03) 40px,
+    hsla(30, 40%, 50%, 0.03) 42px
   );
 }
 
