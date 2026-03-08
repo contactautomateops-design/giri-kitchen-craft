@@ -238,6 +238,23 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                   </div>
                 )}
 
+                {/* Payment Method - show cash option for store pickup */}
+                {deliveryMode === "pickup" && (
+                  <div>
+                    <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Payment Method</label>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setPaymentMethod("upi")}
+                        className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${paymentMethod === "upi" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                        📱 UPI Payment
+                      </button>
+                      <button type="button" onClick={() => setPaymentMethod("cash")}
+                        className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${paymentMethod === "cash" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                        💵 Cash at Store
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Coupon */}
                 <div>
                   <label className="font-body text-xs font-semibold text-foreground block mb-1.5">
