@@ -4,15 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useInventory } from "@/hooks/useInventory";
 import { products } from "@/data/products";
-import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon } from "lucide-react";
+import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp } from "lucide-react";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { inventory, refetch: refetchInventory } = useInventory();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"coupons" | "orders" | "stock">("orders");
+  const [tab, setTab] = useState<"coupons" | "orders" | "stock" | "users">("orders");
   const [coupons, setCoupons] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  const [userOrders, setUserOrders] = useState<Record<string, any[]>>({});
   const [showAdd, setShowAdd] = useState(false);
   const [showManualOrder, setShowManualOrder] = useState(false);
   const [newCoupon, setNewCoupon] = useState({ code: "", discount_percent: 0, discount_amount: 0, min_order_amount: 0, max_uses: 100 });
@@ -36,8 +39,29 @@ const Admin = () => {
     if (isAdmin) {
       fetchCoupons();
       fetchOrders();
+      fetchProfiles();
     }
   }, [isAdmin]);
+
+  const fetchProfiles = async () => {
+    const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+    if (data) setProfiles(data);
+  };
+
+  const fetchUserOrders = async (userId: string) => {
+    if (userOrders[userId]) return;
+    const { data } = await supabase.from("orders").select("*, order_items(*)").eq("user_id", userId).order("created_at", { ascending: false });
+    if (data) setUserOrders(prev => ({ ...prev, [userId]: data }));
+  };
+
+  const toggleUserExpand = (userId: string) => {
+    if (expandedUser === userId) {
+      setExpandedUser(null);
+    } else {
+      setExpandedUser(userId);
+      fetchUserOrders(userId);
+    }
+  };
 
   const fetchCoupons = async () => {
     const { data } = await supabase.from("coupons").select("*").order("created_at", { ascending: false });
@@ -180,6 +204,10 @@ const Admin = () => {
           <button onClick={() => setTab("stock")}
             className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "stock" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             <BoxesIcon className="w-3.5 h-3.5 inline mr-1.5" /> Stock
+          </button>
+          <button onClick={() => setTab("users")}
+            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "users" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+            <Users className="w-3.5 h-3.5 inline mr-1.5" /> Users ({profiles.length})
           </button>
         </div>
 
@@ -425,6 +453,78 @@ const Admin = () => {
                     <Plus className="w-3.5 h-3.5 text-foreground" />
                   </button>
                 </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {tab === "users" && (
+          <div className="space-y-3">
+            {profiles.length === 0 && (
+              <p className="font-body text-sm text-muted-foreground text-center py-8">No registered users yet</p>
+            )}
+            {profiles.map(p => (
+              <div key={p.id} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+                <button
+                  onClick={() => toggleUserExpand(p.id)}
+                  className="w-full p-4 flex items-center justify-between text-left hover:bg-secondary/30 transition-colors"
+                >
+                  <div>
+                    <p className="font-body font-semibold text-sm text-foreground">{p.full_name || "No name"}</p>
+                    <p className="font-body text-[10px] text-muted-foreground">
+                      {p.phone || "No phone"} • Joined {new Date(p.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                    </p>
+                    {p.address && <p className="font-body text-[10px] text-muted-foreground mt-0.5">📍 {p.address}</p>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-body text-[10px] text-muted-foreground">
+                      {userOrders[p.id] ? `${userOrders[p.id].length} orders` : ""}
+                    </span>
+                    {expandedUser === p.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  </div>
+                </button>
+
+                {expandedUser === p.id && (
+                  <div className="border-t border-border px-4 pb-4 pt-3 space-y-3">
+                    {!userOrders[p.id] ? (
+                      <p className="font-body text-xs text-muted-foreground">Loading orders...</p>
+                    ) : userOrders[p.id].length === 0 ? (
+                      <p className="font-body text-xs text-muted-foreground">No orders from this user</p>
+                    ) : (
+                      userOrders[p.id].map((order: any) => (
+                        <div key={order.id} className="bg-secondary/30 rounded-xl p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-body text-[10px] text-muted-foreground">
+                                Order #{order.id.slice(0, 8)} • {new Date(order.created_at).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                              </p>
+                              <p className="font-body text-[10px] text-muted-foreground">{order.delivery_address}</p>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full font-body text-[10px] font-semibold uppercase ${
+                              order.status === "delivered" ? "text-green-700 bg-green-100" :
+                              order.status === "cancelled" ? "text-destructive bg-destructive/10" :
+                              order.status === "confirmed" ? "text-blue-700 bg-blue-100" :
+                              "text-accent-foreground bg-accent/20"
+                            }`}>
+                              {order.status}
+                            </span>
+                          </div>
+                          <div className="space-y-0.5">
+                            {order.order_items?.map((item: any) => (
+                              <div key={item.id} className="flex justify-between font-body text-[11px] text-muted-foreground">
+                                <span>{item.product_name} × {item.quantity}</span>
+                                <span>₹{item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-between items-center pt-1 border-t border-border">
+                            {order.discount > 0 && <span className="font-body text-[10px] text-green-600">-₹{order.discount} ({order.coupon_code})</span>}
+                            <span className="font-body font-bold text-xs text-primary ml-auto">₹{order.total}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
