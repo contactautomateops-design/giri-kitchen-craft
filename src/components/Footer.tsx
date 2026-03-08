@@ -10,7 +10,7 @@ const Footer = () => (
           <span className="font-playfair font-bold text-sm text-primary-foreground">Giri Food Productions</span>
         </div>
         <p className="font-body text-primary-foreground/40 text-xs leading-relaxed mb-4">
-          Pure from the Earth, Straight to Your Table. Bringing authentic, chemical-free food products to every Indian kitchen.
+          Pure from the Earth, Straight to Your Table. Vinoba Bhave Nagar, Kota, Rajasthan. Call: +91 78787 73477
         </p>
         <div className="flex gap-3">
           {["📘", "📷", "💬"].map((icon, i) => (

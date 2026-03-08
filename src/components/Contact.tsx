@@ -49,8 +49,8 @@ const Contact = () => {
 
           <div className="space-y-6" data-aos="fade-up" data-aos-delay="200">
             {[
-              { icon: "📍", label: "Address", value: "Giri Food Productions, Maharashtra, India" },
-              { icon: "📞", label: "Phone", value: "+91 98000 00000" },
+              { icon: "📍", label: "Address", value: "Vinoba Bhave Nagar, Kota, Rajasthan" },
+              { icon: "📞", label: "Phone", value: "+91 78787 73477" },
               { icon: "📧", label: "Email", value: "contact@girifoodproductions.com" },
               { icon: "🕐", label: "Hours", value: "Mon–Sat: 9:00 AM – 6:00 PM" },
             ].map((item, i) => (
@@ -63,7 +63,7 @@ const Contact = () => {
               </div>
             ))}
             <a
-              href="https://wa.me/919800000000"
+              href="https://wa.me/917878773477"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#25D366] text-white font-body font-semibold text-sm hover:scale-105 transition-all mt-2 shadow-lg shadow-[#25D366]/25"
