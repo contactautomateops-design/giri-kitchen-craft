@@ -344,7 +344,31 @@ const Auth = () => {
             </>
           )}
 
-          {mode === "phone" && (
+          {mode === "verify-login" && (
+            <>
+              <button onClick={() => { setMode("login"); setOtp(""); setError(""); setMessage(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Back to login
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Enter the 6-digit code sent to <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleVerifyLoginOtp} className="space-y-4">
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} required maxLength={6}
+                  className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm text-center tracking-[0.5em] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                  placeholder="------" />
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Verifying..." : "Verify & Sign In"}
+                </button>
+                <button type="button" onClick={handleEmailLogin} disabled={loading}
+                  className="w-full py-2 font-body text-xs text-primary hover:underline">
+                  Resend Code
+                </button>
+              </form>
+            </>
+          )}
+
             <>
               <button onClick={() => setMode("login")} className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
                 <ArrowLeft className="w-3 h-3" /> Back to login
