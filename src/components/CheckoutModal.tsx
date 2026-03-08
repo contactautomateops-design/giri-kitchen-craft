@@ -156,6 +156,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
     setCouponCode("");
     setCouponApplied(false);
     setCouponError("");
+    setDeliveryMode("delivery");
     onClose();
   };
 
