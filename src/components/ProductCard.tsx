@@ -3,15 +3,8 @@ import { useCart } from "@/contexts/CartContext";
 import Toast from "./Toast";
 
 interface Product {
-  id: number;
-  name: string;
-  weight: string;
-  price: number;
-  mrp: number;
-  emoji: string;
-  accent: string;
-  badge: string;
-  category: string;
+  id: number; name: string; weight: string; price: number; mrp: number;
+  emoji: string; accent: string; badge: string; category: string;
 }
 
 const ProductCard = ({ product, delay }: { product: Product; delay: number }) => {
@@ -30,50 +23,41 @@ const ProductCard = ({ product, delay }: { product: Product; delay: number }) =>
   return (
     <>
       <div
-        className="relative rounded-2xl overflow-hidden bg-giri-card-bg group transition-all duration-400 hover:-translate-y-2.5 hover:shadow-[0_20px_60px_rgba(59,31,10,0.15)]"
-        style={{ borderTop: `6px solid ${product.accent}` }}
+        className="relative rounded-xl overflow-hidden bg-background border border-border group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
         data-aos="fade-up"
         data-aos-delay={delay}
       >
-        {/* Badge */}
-        <div
-          className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-white text-xs font-nunito font-bold"
-          style={{ backgroundColor: product.accent }}
-        >
-          {product.badge}
-        </div>
-
-        <div className="p-6 pt-8 flex flex-col items-center text-center">
-          {/* Emoji circle */}
-          <div
-            className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
-            style={{ backgroundColor: `${product.accent}15` }}
-          >
-            <span className="text-5xl">{product.emoji}</span>
+        <div className="p-6 flex flex-col items-center text-center">
+          <div className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-[10px] font-body font-semibold tracking-wider uppercase">
+            {product.badge}
           </div>
 
-          <h3 className="font-playfair text-xl font-bold text-giri-text-dark">{product.name}</h3>
-          <p className="font-nunito text-sm text-giri-text-light mt-1">{product.weight}</p>
+          <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-5">
+            <span className="text-4xl">{product.emoji}</span>
+          </div>
 
-          {/* Stars */}
+          <h3 className="font-playfair text-lg font-bold text-foreground">{product.name}</h3>
+          <p className="font-body text-xs text-muted-foreground mt-1">{product.weight}</p>
+
           <div className="flex items-center gap-1 mt-3">
-            <span className="text-sm">⭐⭐⭐⭐⭐</span>
-            <span className="font-nunito text-xs text-giri-text-light">4.5 (128 reviews)</span>
+            <span className="text-xs">⭐⭐⭐⭐⭐</span>
+            <span className="font-body text-[10px] text-muted-foreground">4.5 (128)</span>
           </div>
 
-          {/* Price */}
           <div className="mt-4">
-            <span className="font-nunito text-xs text-giri-text-light line-through">MRP ₹{product.mrp}</span>
-            <div className="font-nunito text-2xl font-bold text-giri-primary">₹{product.price}</div>
+            <span className="font-body text-[10px] text-muted-foreground line-through">MRP ₹{product.mrp}</span>
+            <div className="font-body text-xl font-bold text-foreground">₹{product.price}</div>
           </div>
 
-          {/* Add to Cart */}
           <button
             onClick={handleAdd}
-            className="w-full mt-5 py-3 rounded-xl font-nunito font-bold text-sm text-white transition-all hover:scale-[1.02]"
-            style={{ backgroundColor: added ? "#2D5A27" : product.accent }}
+            className={`w-full mt-5 py-2.5 rounded-lg font-body font-semibold text-xs tracking-wide transition-all ${
+              added
+                ? "bg-foreground/10 text-foreground"
+                : "bg-foreground text-background hover:bg-foreground/90"
+            }`}
           >
-            {added ? "✓ Added!" : "🛒 Add to Cart"}
+            {added ? "✓ Added!" : "Add to Cart"}
           </button>
         </div>
       </div>

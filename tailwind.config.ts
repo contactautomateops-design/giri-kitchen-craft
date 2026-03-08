@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         playfair: ['"Playfair Display"', 'serif'],
-        nunito: ['"Nunito"', 'sans-serif'],
+        body: ['"Inter"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -50,17 +50,6 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-        },
-        giri: {
-          primary: "#E87000",
-          secondary: "#F5C518",
-          bg: "#FFF8EE",
-          dark: "#3B1F0A",
-          green: "#2D5A27",
-          "light-brown": "#C4874A",
-          "card-bg": "#FFFAF2",
-          "text-dark": "#2C1810",
-          "text-light": "#8B6914",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
