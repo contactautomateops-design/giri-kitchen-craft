@@ -397,6 +397,38 @@ const Admin = () => {
             </div>
           </div>
         )}
+        {tab === "stock" && (
+          <div className="space-y-3">
+            <p className="font-body text-xs text-muted-foreground mb-2">Set available stock for each product. Products with 0 stock will show as "Out of Stock".</p>
+            {inventory.map(item => (
+              <div key={item.id} className="bg-card rounded-2xl border border-border p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-body font-semibold text-sm text-foreground">{item.product_name}</p>
+                  <p className={`font-body text-[10px] ${item.stock <= 0 ? "text-destructive font-bold" : item.stock <= 10 ? "text-accent-foreground" : "text-muted-foreground"}`}>
+                    {item.stock <= 0 ? "OUT OF STOCK" : `${item.stock} in stock`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => updateStock(item.product_name, item.stock - 10)}
+                    className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
+                    <Minus className="w-3.5 h-3.5 text-foreground" />
+                  </button>
+                  <input
+                    type="number"
+                    value={item.stock}
+                    onChange={e => updateStock(item.product_name, parseInt(e.target.value) || 0)}
+                    className="w-16 text-center px-2 py-1.5 rounded-lg border border-border font-body text-xs bg-background"
+                    min="0"
+                  />
+                  <button onClick={() => updateStock(item.product_name, item.stock + 10)}
+                    className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
+                    <Plus className="w-3.5 h-3.5 text-foreground" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
