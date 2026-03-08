@@ -303,7 +303,9 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                 <h3 className="font-playfair text-xl font-bold text-foreground mb-2">Thank You!</h3>
                 <p className="font-body text-sm text-muted-foreground mb-1">Your order has been placed successfully.</p>
                 <p className="font-body text-sm text-muted-foreground mb-6">
-                  Delivery in <span className="font-bold text-foreground">4-5 working days</span>.
+                  {deliveryMode === "pickup"
+                    ? <>We'll notify you when your order is <span className="font-bold text-foreground">ready for pickup</span>.</>
+                    : <>Delivery in <span className="font-bold text-foreground">4-5 working days</span>.</>}
                 </p>
                 {user && (
                   <button onClick={() => { handleClose(); navigate("/profile"); }}
