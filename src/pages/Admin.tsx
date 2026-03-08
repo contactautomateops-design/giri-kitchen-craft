@@ -39,8 +39,29 @@ const Admin = () => {
     if (isAdmin) {
       fetchCoupons();
       fetchOrders();
+      fetchProfiles();
     }
   }, [isAdmin]);
+
+  const fetchProfiles = async () => {
+    const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+    if (data) setProfiles(data);
+  };
+
+  const fetchUserOrders = async (userId: string) => {
+    if (userOrders[userId]) return;
+    const { data } = await supabase.from("orders").select("*, order_items(*)").eq("user_id", userId).order("created_at", { ascending: false });
+    if (data) setUserOrders(prev => ({ ...prev, [userId]: data }));
+  };
+
+  const toggleUserExpand = (userId: string) => {
+    if (expandedUser === userId) {
+      setExpandedUser(null);
+    } else {
+      setExpandedUser(userId);
+      fetchUserOrders(userId);
+    }
+  };
 
   const fetchCoupons = async () => {
     const { data } = await supabase.from("coupons").select("*").order("created_at", { ascending: false });
