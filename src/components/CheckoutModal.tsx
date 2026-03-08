@@ -92,6 +92,11 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
       }));
       await supabase.from("order_items").insert(orderItemsData);
 
+      // Decrement stock for each item
+      for (const item of items) {
+        await supabase.rpc("decrement_stock" as any, { p_product_name: item.name, p_quantity: item.quantity });
+      }
+
       if (couponApplied) {
         await supabase.rpc("increment_coupon_usage" as any, { coupon_code: couponCode.toUpperCase() });
       }

@@ -7,23 +7,26 @@ interface Product {
   emoji: string; accent: string; badge: string; category: string; image: string;
 }
 
-const ProductCard = ({ product, delay }: { product: Product; delay: number }) => {
+const ProductCard = ({ product, delay, stock }: { product: Product; delay: number; stock?: number }) => {
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  const outOfStock = stock !== undefined && stock <= 0;
+
   const handleAdd = useCallback(() => {
+    if (outOfStock) return;
     addToCart(product.name, product.price);
     setAdded(true);
     setShowToast(true);
     setTimeout(() => setAdded(false), 1200);
     setTimeout(() => setShowToast(false), 3000);
-  }, [addToCart, product]);
+  }, [addToCart, product, outOfStock]);
 
   return (
     <>
       <div
-        className="relative rounded-2xl overflow-hidden bg-card border border-border group transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/10"
+        className={`relative rounded-2xl overflow-hidden bg-card border border-border group transition-all duration-300 ${outOfStock ? "opacity-70" : "hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/10"}`}
         data-aos="fade-up"
         data-aos-delay={delay}
       >
@@ -32,12 +35,23 @@ const ProductCard = ({ product, delay }: { product: Product; delay: number }) =>
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className={`w-full h-full object-cover transition-transform duration-500 ${outOfStock ? "grayscale" : "group-hover:scale-105"}`}
             loading="lazy"
           />
-          <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-primary-foreground text-[10px] font-body font-bold tracking-wider uppercase" style={{ backgroundColor: product.accent }}>
-            {product.badge}
-          </div>
+          {outOfStock ? (
+            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-body font-bold tracking-wider uppercase">
+              OUT OF STOCK
+            </div>
+          ) : (
+            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-primary-foreground text-[10px] font-body font-bold tracking-wider uppercase" style={{ backgroundColor: product.accent }}>
+              {product.badge}
+            </div>
+          )}
+          {!outOfStock && stock !== undefined && stock <= 10 && stock > 0 && (
+            <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-accent text-accent-foreground text-[10px] font-body font-bold">
+              Only {stock} left!
+            </div>
+          )}
         </div>
 
         <div className="p-5">
@@ -56,13 +70,16 @@ const ProductCard = ({ product, delay }: { product: Product; delay: number }) =>
 
           <button
             onClick={handleAdd}
+            disabled={outOfStock}
             className={`w-full mt-4 py-2.5 rounded-xl font-body font-semibold text-xs tracking-wide transition-all ${
-              added
+              outOfStock
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : added
                 ? "bg-green-50 text-green-700 border border-green-200"
                 : "bg-primary text-primary-foreground hover:brightness-110 shadow-md shadow-primary/20"
             }`}
           >
-            {added ? "✓ Added!" : "Add to Cart"}
+            {outOfStock ? "Out of Stock" : added ? "✓ Added!" : "Add to Cart"}
           </button>
         </div>
       </div>

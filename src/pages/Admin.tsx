@@ -2,13 +2,15 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useInventory } from "@/hooks/useInventory";
 import { products } from "@/data/products";
-import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X } from "lucide-react";
+import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon } from "lucide-react";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
+  const { inventory, refetch: refetchInventory } = useInventory();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"coupons" | "orders">("orders");
+  const [tab, setTab] = useState<"coupons" | "orders" | "stock">("orders");
   const [coupons, setCoupons] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [showAdd, setShowAdd] = useState(false);
@@ -95,6 +97,11 @@ const Admin = () => {
     fetchOrders();
   };
 
+  const updateStock = async (productName: string, newStock: number) => {
+    await supabase.from("product_inventory").update({ stock: Math.max(0, newStock), updated_at: new Date().toISOString() } as any).eq("product_name", productName);
+    refetchInventory();
+  };
+
   // Manual order helpers
   const addProductToManual = (product: typeof products[0]) => {
     setManualOrder(prev => {
@@ -169,6 +176,10 @@ const Admin = () => {
           <button onClick={() => setTab("coupons")}
             className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "coupons" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             <Tag className="w-3.5 h-3.5 inline mr-1.5" /> Coupons
+          </button>
+          <button onClick={() => setTab("stock")}
+            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "stock" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+            <BoxesIcon className="w-3.5 h-3.5 inline mr-1.5" /> Stock
           </button>
         </div>
 
@@ -384,6 +395,38 @@ const Admin = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+        {tab === "stock" && (
+          <div className="space-y-3">
+            <p className="font-body text-xs text-muted-foreground mb-2">Set available stock for each product. Products with 0 stock will show as "Out of Stock".</p>
+            {inventory.map(item => (
+              <div key={item.id} className="bg-card rounded-2xl border border-border p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-body font-semibold text-sm text-foreground">{item.product_name}</p>
+                  <p className={`font-body text-[10px] ${item.stock <= 0 ? "text-destructive font-bold" : item.stock <= 10 ? "text-accent-foreground" : "text-muted-foreground"}`}>
+                    {item.stock <= 0 ? "OUT OF STOCK" : `${item.stock} in stock`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => updateStock(item.product_name, item.stock - 10)}
+                    className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
+                    <Minus className="w-3.5 h-3.5 text-foreground" />
+                  </button>
+                  <input
+                    type="number"
+                    value={item.stock}
+                    onChange={e => updateStock(item.product_name, parseInt(e.target.value) || 0)}
+                    className="w-16 text-center px-2 py-1.5 rounded-lg border border-border font-body text-xs bg-background"
+                    min="0"
+                  />
+                  <button onClick={() => updateStock(item.product_name, item.stock + 10)}
+                    className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
+                    <Plus className="w-3.5 h-3.5 text-foreground" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
