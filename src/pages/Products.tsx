@@ -3,6 +3,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { products } from "@/data/products";
 import ProductCard from "@/components/ProductCard";
+import { useInventory } from "@/hooks/useInventory";
 
 const filters = [
   { label: "All", value: "all" },
@@ -12,6 +13,7 @@ const filters = [
 
 const Products = () => {
   const [active, setActive] = useState("all");
+  const { getStock } = useInventory();
 
   useEffect(() => {
     AOS.init({ duration: 800, once: true, offset: 80, easing: "ease-out-cubic" });
@@ -53,7 +55,7 @@ const Products = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((product, i) => (
-            <ProductCard key={product.id} product={product} delay={i * 80} />
+            <ProductCard key={product.id} product={product} delay={i * 80} stock={getStock(product.name)} />
           ))}
         </div>
       </div>
