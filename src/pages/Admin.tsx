@@ -273,7 +273,7 @@ const Admin = () => {
                 <div>
                   <label className="font-body text-[10px] font-semibold text-foreground block mb-2">Add Products</label>
                   <div className="flex flex-wrap gap-2">
-                    {products.map(p => (
+                    {dbProducts.filter(p => p.is_active).map(p => (
                       <button key={p.id} type="button" onClick={() => addProductToManual(p)}
                         className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 font-body text-xs transition-colors">
                         {p.emoji} {p.name} — ₹{p.price}
