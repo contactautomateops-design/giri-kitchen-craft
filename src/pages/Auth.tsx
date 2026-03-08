@@ -9,7 +9,7 @@ import { Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft } from "lucide-react";
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "verify-login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
