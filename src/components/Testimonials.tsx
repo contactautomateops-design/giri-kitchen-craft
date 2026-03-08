@@ -26,10 +26,10 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-24 bg-secondary/30">
+    <section className="py-24 bg-secondary/40">
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-14" data-aos="fade-up">
-          <span className="inline-block px-3 py-1 rounded-full border border-border text-muted-foreground font-body font-medium text-xs tracking-widest uppercase mb-4">
+          <span className="inline-block px-3 py-1.5 rounded-full bg-primary/10 text-primary font-body font-semibold text-xs tracking-widest uppercase mb-4">
             Testimonials
           </span>
           <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-foreground">
@@ -42,13 +42,13 @@ const Testimonials = () => {
             <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${current * 100}%)` }}>
               {testimonials.map((t, i) => (
                 <div key={i} className="w-full flex-shrink-0 px-2">
-                  <div className="bg-background rounded-xl p-8 border border-border relative">
-                    <span className="absolute top-4 left-6 text-4xl text-border font-playfair leading-none">"</span>
+                  <div className="bg-background rounded-2xl p-8 border border-border shadow-sm relative">
+                    <span className="absolute top-4 left-6 text-5xl text-primary/20 font-playfair leading-none">"</span>
                     <p className="font-body text-foreground leading-relaxed mt-6 text-sm italic">
                       {t.text}
                     </p>
                     <div className="mt-6 flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center font-playfair font-bold text-sm text-foreground">
+                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-playfair font-bold text-sm text-primary">
                         {t.name[0]}
                       </div>
                       <div>
@@ -63,16 +63,16 @@ const Testimonials = () => {
             </div>
           </div>
 
-          <button onClick={() => handleManual(prev)} className="absolute left-[-16px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-secondary transition-all">
+          <button onClick={() => handleManual(prev)} className="absolute left-[-16px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-primary/10 transition-all shadow-sm">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button onClick={() => handleManual(next)} className="absolute right-[-16px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-secondary transition-all">
+          <button onClick={() => handleManual(next)} className="absolute right-[-16px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center hover:bg-primary/10 transition-all shadow-sm">
             <ChevronRight className="w-4 h-4" />
           </button>
 
           <div className="flex justify-center gap-2 mt-6">
             {testimonials.map((_, i) => (
-              <button key={i} onClick={() => handleManual(() => setCurrent(i))} className={`w-2 h-2 rounded-full transition-all ${i === current ? "bg-foreground w-5" : "bg-border"}`} />
+              <button key={i} onClick={() => handleManual(() => setCurrent(i))} className={`w-2 h-2 rounded-full transition-all ${i === current ? "bg-primary w-5" : "bg-border"}`} />
             ))}
           </div>
         </div>

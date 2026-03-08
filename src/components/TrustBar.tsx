@@ -18,8 +18,8 @@ const TrustBar = () => (
           data-aos-delay={i * 100}
         >
           <span className="text-2xl mb-2">{item.icon}</span>
-          <span className="text-background font-body font-semibold text-xs tracking-wide">{item.title}</span>
-          <span className="text-background/40 font-body text-[11px] mt-1">{item.desc}</span>
+          <span className="text-primary-foreground font-body font-semibold text-xs tracking-wide">{item.title}</span>
+          <span className="text-primary-foreground/40 font-body text-[11px] mt-1">{item.desc}</span>
         </div>
       ))}
     </div>
