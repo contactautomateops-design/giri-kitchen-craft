@@ -491,7 +491,60 @@ const Auth = () => {
                 </div>
                 <button type="submit" disabled={loading}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
-                  {loading ? "Sending..." : "Send Reset Link"}
+                  {loading ? "Sending..." : "Send Verification Code"}
+                </button>
+              </form>
+            </>
+          )}
+
+          {mode === "verify-forgot" && (
+            <>
+              <button onClick={() => { setMode("forgot"); setOtp(""); setError(""); setMessage(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Back
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Enter the 6-digit code sent to <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleVerifyForgotOtp} className="space-y-4">
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} required maxLength={6}
+                  className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm text-center tracking-[0.5em] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                  placeholder="------" />
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Verifying..." : "Verify Code"}
+                </button>
+                <button type="button" onClick={handleForgotPassword} disabled={loading}
+                  className="w-full py-2 font-body text-xs text-primary hover:underline">
+                  Resend Code
+                </button>
+              </form>
+            </>
+          )}
+
+          {mode === "new-password" && (
+            <>
+              <button onClick={() => { setMode("forgot"); setOtp(""); setError(""); setMessage(""); setNewPassword(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Start over
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Set a new password for <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleSetNewPassword} className="space-y-4">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input type={showPassword ? "text" : "password"} value={newPassword} onChange={e => setNewPassword(e.target.value)} required minLength={6}
+                    className="w-full pl-10 pr-10 py-3 rounded-xl border border-border font-body text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                    placeholder="New password (min 6 chars)" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Updating..." : "Update Password"}
                 </button>
               </form>
             </>
