@@ -264,7 +264,8 @@ const Auth = () => {
             {mode === "phone" && "Phone Login"}
             {mode === "otp" && "Enter OTP"}
             {mode === "forgot" && "Reset Password"}
-          </h1>
+            {mode === "verify-forgot" && "Verify Email"}
+            {mode === "new-password" && "New Password"}
           <p className="font-body text-sm text-muted-foreground mt-1">Giri Food Productions</p>
         </div>
 
