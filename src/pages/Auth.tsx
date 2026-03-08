@@ -22,8 +22,9 @@ const Auth = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
+    // Don't redirect during OTP verification — user must complete verification first
+    if (user && mode !== "verify-signup") navigate("/");
+  }, [user, navigate, mode]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +36,14 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
+
+    // Sign out any existing session to prevent auto-redirect
+    await supabase.auth.signOut();
 
     // Generate OTP and send to n8n webhook
     const otpCode = generateOtp();
