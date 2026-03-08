@@ -1,18 +1,43 @@
 // N8N Webhook Configuration
-// Replace these placeholder URLs with your actual n8n webhook URLs
 
 export const N8N_WEBHOOKS = {
+  // Signup verification webhook
+  SIGNUP_VERIFICATION: "https://finance-manager-adi108.duckdns.org/webhook/pass-change",
+
   // SMS/OTP webhooks
-  SEND_OTP: "https://your-n8n-instance.com/webhook/send-otp", // TODO: Replace with your n8n webhook URL
-  VERIFY_OTP: "https://your-n8n-instance.com/webhook/verify-otp", // TODO: Replace with your n8n webhook URL
+  SEND_OTP: "https://your-n8n-instance.com/webhook/send-otp",
+  VERIFY_OTP: "https://your-n8n-instance.com/webhook/verify-otp",
 
   // Email notification webhooks
-  ORDER_CONFIRMATION_CUSTOMER: "https://your-n8n-instance.com/webhook/order-confirmation-customer", // TODO: Replace
-  ORDER_NOTIFICATION_SELLER: "https://your-n8n-instance.com/webhook/order-notification-seller", // TODO: Replace
-  WELCOME_EMAIL: "https://your-n8n-instance.com/webhook/welcome-email", // TODO: Replace
+  ORDER_CONFIRMATION_CUSTOMER: "https://your-n8n-instance.com/webhook/order-confirmation-customer",
+  ORDER_NOTIFICATION_SELLER: "https://your-n8n-instance.com/webhook/order-notification-seller",
+  WELCOME_EMAIL: "https://your-n8n-instance.com/webhook/welcome-email",
 };
 
-// Send OTP via n8n webhook
+// Generate a 6-digit OTP
+export const generateOtp = (): string => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Send signup verification OTP via n8n webhook
+export const sendSignupOtp = async (email: string, otp: string, fullName: string): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const response = await fetch(N8N_WEBHOOKS.SIGNUP_VERIFICATION, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp, fullName }),
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.message || "Failed to send verification email");
+    }
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+};
+
+// Send OTP via n8n webhook (phone)
 export const sendOtp = async (phone: string): Promise<{ success: boolean; error?: string }> => {
   try {
     const response = await fetch(N8N_WEBHOOKS.SEND_OTP, {
@@ -28,7 +53,7 @@ export const sendOtp = async (phone: string): Promise<{ success: boolean; error?
   }
 };
 
-// Verify OTP via n8n webhook
+// Verify OTP via n8n webhook (phone)
 export const verifyOtp = async (phone: string, otp: string): Promise<{ success: boolean; error?: string }> => {
   try {
     const response = await fetch(N8N_WEBHOOKS.VERIFY_OTP, {

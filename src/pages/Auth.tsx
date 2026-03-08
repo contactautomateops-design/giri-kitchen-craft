@@ -1,20 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
+import { generateOtp, sendSignupOtp } from "@/lib/n8n";
 import { Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
 
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup" | "phone" | "otp" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -38,7 +39,35 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signUp({
+    setMessage("");
+
+    // Generate OTP and send to n8n webhook
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
+
+    const result = await sendSignupOtp(email, otpCode, fullName);
+    if (!result.success) {
+      setError(result.error || "Failed to send verification email");
+    } else {
+      setMessage("A verification code has been sent to your email!");
+      setMode("verify-signup");
+    }
+    setLoading(false);
+  };
+
+  const handleVerifySignupOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (otp !== generatedOtp) {
+      setError("Invalid OTP. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // OTP verified — now create the Supabase account (auto-confirm is enabled)
+    const { error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -46,8 +75,20 @@ const Auth = () => {
         emailRedirectTo: window.location.origin,
       },
     });
-    if (error) setError(error.message);
-    else setMessage("Check your email for a verification link!");
+
+    if (signupError) {
+      setError(signupError.message);
+      setLoading(false);
+      return;
+    }
+
+    // Auto-confirm is on, so sign in immediately
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      setError(loginError.message);
+    } else {
+      navigate("/");
+    }
     setLoading(false);
   };
 
@@ -66,7 +107,6 @@ const Auth = () => {
     setLoading(true);
     setError("");
     const formattedPhone = phone.startsWith("+") ? phone : `+91${phone}`;
-    // Send OTP via n8n webhook
     const { sendOtp } = await import("@/lib/n8n");
     const result = await sendOtp(formattedPhone);
     if (!result.success) setError(result.error || "Failed to send OTP");
@@ -79,14 +119,11 @@ const Auth = () => {
     setLoading(true);
     setError("");
     const formattedPhone = phone.startsWith("+") ? phone : `+91${phone}`;
-    // Verify OTP via n8n webhook
     const { verifyOtp } = await import("@/lib/n8n");
     const result = await verifyOtp(formattedPhone, otp);
     if (!result.success) {
       setError(result.error || "Invalid OTP");
     } else {
-      // After OTP verification via n8n, sign in the user with Supabase
-      // You may need to create/sign-in the user via a custom flow here
       navigate("/");
     }
     setLoading(false);
@@ -112,6 +149,7 @@ const Auth = () => {
           <h1 className="font-playfair text-2xl font-bold text-foreground mt-2">
             {mode === "login" && "Welcome Back"}
             {mode === "signup" && "Create Account"}
+            {mode === "verify-signup" && "Verify Email"}
             {mode === "phone" && "Phone Login"}
             {mode === "otp" && "Enter OTP"}
             {mode === "forgot" && "Reset Password"}
@@ -225,13 +263,38 @@ const Auth = () => {
                 </div>
                 <button type="submit" disabled={loading}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
-                  {loading ? "Creating Account..." : "Create Account"}
+                  {loading ? "Sending verification..." : "Create Account"}
                 </button>
               </form>
               <p className="mt-4 text-center font-body text-xs text-muted-foreground">
                 Already have an account?{" "}
                 <button onClick={() => setMode("login")} className="text-primary font-semibold hover:underline">Sign In</button>
               </p>
+            </>
+          )}
+
+          {mode === "verify-signup" && (
+            <>
+              <button onClick={() => { setMode("signup"); setOtp(""); setError(""); setMessage(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Back to signup
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Enter the 6-digit code sent to <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleVerifySignupOtp} className="space-y-4">
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} required maxLength={6}
+                  className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm text-center tracking-[0.5em] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                  placeholder="------" />
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Verifying..." : "Verify & Create Account"}
+                </button>
+                <button type="button" onClick={handleSignup} disabled={loading}
+                  className="w-full py-2 font-body text-xs text-primary hover:underline">
+                  Resend Code
+                </button>
+              </form>
             </>
           )}
 
