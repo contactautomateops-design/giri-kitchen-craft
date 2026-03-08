@@ -66,8 +66,10 @@ const Auth = () => {
     setLoading(true);
     setError("");
     const formattedPhone = phone.startsWith("+") ? phone : `+91${phone}`;
-    const { error } = await supabase.auth.signInWithOtp({ phone: formattedPhone });
-    if (error) setError(error.message);
+    // Send OTP via n8n webhook
+    const { sendOtp } = await import("@/lib/n8n");
+    const result = await sendOtp(formattedPhone);
+    if (!result.success) setError(result.error || "Failed to send OTP");
     else setMode("otp");
     setLoading(false);
   };
@@ -77,9 +79,16 @@ const Auth = () => {
     setLoading(true);
     setError("");
     const formattedPhone = phone.startsWith("+") ? phone : `+91${phone}`;
-    const { error } = await supabase.auth.verifyOtp({ phone: formattedPhone, token: otp, type: "sms" });
-    if (error) setError(error.message);
-    else navigate("/");
+    // Verify OTP via n8n webhook
+    const { verifyOtp } = await import("@/lib/n8n");
+    const result = await verifyOtp(formattedPhone, otp);
+    if (!result.success) {
+      setError(result.error || "Invalid OTP");
+    } else {
+      // After OTP verification via n8n, sign in the user with Supabase
+      // You may need to create/sign-in the user via a custom flow here
+      navigate("/");
+    }
     setLoading(false);
   };
 
