@@ -369,6 +369,7 @@ const Auth = () => {
             </>
           )}
 
+          {mode === "phone" && (
             <>
               <button onClick={() => setMode("login")} className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
                 <ArrowLeft className="w-3 h-3" /> Back to login
