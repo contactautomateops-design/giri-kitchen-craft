@@ -133,6 +133,27 @@ export type Database = {
         }
         Relationships: []
       }
+      product_inventory: {
+        Row: {
+          id: string
+          product_name: string
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_name: string
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_name?: string
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -183,6 +204,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_stock: {
+        Args: { p_product_name: string; p_quantity: number }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
