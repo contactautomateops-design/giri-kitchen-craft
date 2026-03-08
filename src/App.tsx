@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useLocation } from "react-router-dom";
 import ScrollProgress from "@/components/ScrollProgress";
 import ScrollToTop from "@/components/ScrollToTop";
 import WhatsAppButton from "@/components/WhatsAppButton";
