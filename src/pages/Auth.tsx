@@ -179,11 +179,75 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) setError(error.message);
-    else setMessage("Check your email for a password reset link!");
+    setMessage("");
+
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
+
+    const result = await sendSignupOtp(email, otpCode, "User");
+    if (!result.success) {
+      setError(result.error || "Failed to send verification email");
+    } else {
+      setMessage("A verification code has been sent to your email!");
+      setMode("verify-forgot");
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyForgotOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (otp !== generatedOtp) {
+      setError("Invalid OTP. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    setMessage("");
+    setMode("new-password");
+    setLoading(false);
+  };
+
+  const handleSetNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    // Sign in with old password is not possible since user forgot it.
+    // We use admin-level password update via a service role edge function or
+    // Supabase resetPasswordForEmail + updateUser flow.
+    // Since we already verified OTP, sign in with magic link approach:
+    // Actually, we need to use supabase admin to update. Let's use the
+    // resetPasswordForEmail silently then updateUser after session.
+    
+    // Strategy: send a silent reset, but since we already verified identity via OTP,
+    // we'll sign the user in first (they need to provide current password which they don't know).
+    // Best approach: use an edge function with service role to update password.
+    
+    // For now, use Supabase's resetPasswordForEmail to send a recovery email,
+    // then on the reset-password page they set the new password.
+    // BUT the user wants OTP-only flow. So let's create an edge function.
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ email, newPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to reset password");
+      setMessage("Password updated successfully! You can now sign in.");
+      setMode("login");
+      setNewPassword("");
+      setPassword("");
+    } catch (err: any) {
+      setError(err.message);
+    }
     setLoading(false);
   };
 
