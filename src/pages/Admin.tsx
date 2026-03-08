@@ -457,6 +457,78 @@ const Admin = () => {
             ))}
           </div>
         )}
+        {tab === "users" && (
+          <div className="space-y-3">
+            {profiles.length === 0 && (
+              <p className="font-body text-sm text-muted-foreground text-center py-8">No registered users yet</p>
+            )}
+            {profiles.map(p => (
+              <div key={p.id} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+                <button
+                  onClick={() => toggleUserExpand(p.id)}
+                  className="w-full p-4 flex items-center justify-between text-left hover:bg-secondary/30 transition-colors"
+                >
+                  <div>
+                    <p className="font-body font-semibold text-sm text-foreground">{p.full_name || "No name"}</p>
+                    <p className="font-body text-[10px] text-muted-foreground">
+                      {p.phone || "No phone"} • Joined {new Date(p.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                    </p>
+                    {p.address && <p className="font-body text-[10px] text-muted-foreground mt-0.5">📍 {p.address}</p>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-body text-[10px] text-muted-foreground">
+                      {userOrders[p.id] ? `${userOrders[p.id].length} orders` : ""}
+                    </span>
+                    {expandedUser === p.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  </div>
+                </button>
+
+                {expandedUser === p.id && (
+                  <div className="border-t border-border px-4 pb-4 pt-3 space-y-3">
+                    {!userOrders[p.id] ? (
+                      <p className="font-body text-xs text-muted-foreground">Loading orders...</p>
+                    ) : userOrders[p.id].length === 0 ? (
+                      <p className="font-body text-xs text-muted-foreground">No orders from this user</p>
+                    ) : (
+                      userOrders[p.id].map((order: any) => (
+                        <div key={order.id} className="bg-secondary/30 rounded-xl p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-body text-[10px] text-muted-foreground">
+                                Order #{order.id.slice(0, 8)} • {new Date(order.created_at).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                              </p>
+                              <p className="font-body text-[10px] text-muted-foreground">{order.delivery_address}</p>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full font-body text-[10px] font-semibold uppercase ${
+                              order.status === "delivered" ? "text-green-700 bg-green-100" :
+                              order.status === "cancelled" ? "text-destructive bg-destructive/10" :
+                              order.status === "confirmed" ? "text-blue-700 bg-blue-100" :
+                              "text-accent-foreground bg-accent/20"
+                            }`}>
+                              {order.status}
+                            </span>
+                          </div>
+                          <div className="space-y-0.5">
+                            {order.order_items?.map((item: any) => (
+                              <div key={item.id} className="flex justify-between font-body text-[11px] text-muted-foreground">
+                                <span>{item.product_name} × {item.quantity}</span>
+                                <span>₹{item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-between items-center pt-1 border-t border-border">
+                            {order.discount > 0 && <span className="font-body text-[10px] text-green-600">-₹{order.discount} ({order.coupon_code})</span>}
+                            <span className="font-body font-bold text-xs text-primary ml-auto">₹{order.total}</span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
