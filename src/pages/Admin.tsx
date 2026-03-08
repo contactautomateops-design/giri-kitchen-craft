@@ -12,7 +12,8 @@ const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const { inventory, refetch: refetchInventory } = useInventory();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"coupons" | "orders" | "stock" | "users">("orders");
+  const [tab, setTab] = useState<"orders" | "coupons" | "stock" | "users" | "products" | "analytics">("orders");
+  const { products: dbProducts, refetch: refetchProducts } = useProducts();
   const [coupons, setCoupons] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
