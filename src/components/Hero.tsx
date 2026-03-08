@@ -8,42 +8,31 @@ const Hero = () => {
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.fromTo(".hero-badge", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 0.2)
-        .fromTo(".hero-line-1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 0.5)
-        .fromTo(".hero-line-2", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 0.7)
-        .fromTo(".hero-line-3", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 0.9)
-        .fromTo(".hero-sub", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 1.1)
-        .fromTo(".hero-ctas", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 1.3)
-        .fromTo(".hero-trust", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6 }, 1.5)
-        .fromTo(".hero-right", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.8 }, 0.8);
+      tl.fromTo(".hero-badge", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 0.2)
+        .fromTo(".hero-line-1", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 0.4)
+        .fromTo(".hero-line-2", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 0.6)
+        .fromTo(".hero-line-3", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 0.8)
+        .fromTo(".hero-sub", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 1.0)
+        .fromTo(".hero-ctas", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, 1.2)
+        .fromTo(".hero-trust", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, 1.4)
+        .fromTo(".hero-right", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.8 }, 0.6);
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
-  // Create spice particles
-  const particles = Array.from({ length: 20 }, (_, i) => ({
+  const particles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    size: Math.random() * 6 + 4,
+    size: Math.random() * 4 + 2,
     left: Math.random() * 100,
     top: Math.random() * 100,
-    color: ["#E87000", "#F5C518", "#C4874A", "#5C2A0A"][Math.floor(Math.random() * 4)],
+    color: ["#e5e5e5", "#d4d4d4", "#a3a3a3"][Math.floor(Math.random() * 3)],
     duration: Math.random() * 4 + 3,
     delay: Math.random() * 5,
   }));
 
-  const orbitIcons = ["🌱", "🥜", "🌻", "🥥"];
-
   return (
-    <section ref={heroRef} className="hero-gradient relative min-h-screen flex items-center overflow-hidden">
-      {/* Grain overlay */}
-      <div className="hero-grain absolute inset-0 z-[1]" />
-
-      {/* Decorative blurred circles */}
-      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-giri-primary/20 blur-[80px] animate-[floatBob_8s_ease-in-out_infinite]" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-giri-secondary/15 blur-[80px] animate-[floatBob_8s_ease-in-out_infinite_2s]" />
-      <div className="absolute top-[30%] left-[40%] w-[300px] h-[300px] rounded-full bg-giri-light-brown/10 blur-[80px]" />
-
-      {/* Spice Particles */}
+    <section ref={heroRef} className="hero-gradient relative min-h-screen flex items-center overflow-hidden border-b border-border">
+      {/* Subtle particles */}
       {particles.map(p => (
         <div
           key={p.id}
@@ -56,78 +45,73 @@ const Hero = () => {
             backgroundColor: p.color,
             "--duration": `${p.duration}s`,
             "--delay": `${p.delay}s`,
-            opacity: 0.5,
           } as React.CSSProperties}
         />
       ))}
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid grid-cols-1 lg:grid-cols-[55%_45%] items-center gap-8 py-20 pt-28">
-        {/* Left */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-[55%_45%] items-center gap-12 py-20 pt-28">
         <div>
-          <div className="hero-badge opacity-0 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-giri-primary/20 border border-giri-primary/30 mb-6">
-            <span className="text-sm">🌿</span>
-            <span className="text-sm font-nunito font-semibold text-giri-secondary">100% Natural & Pure</span>
+          <div className="hero-badge opacity-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border mb-8">
+            <span className="text-xs">🌿</span>
+            <span className="text-xs font-body font-medium text-muted-foreground tracking-wide">100% Natural & Pure</span>
           </div>
 
-          <h1 className="hero-line-1 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-white italic leading-tight">
+          <h1 className="hero-line-1 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1]">
             Pure Oils.
           </h1>
-          <h1 className="hero-line-2 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-giri-secondary leading-tight mt-2">
+          <h1 className="hero-line-2 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-muted-foreground leading-[1.1] mt-1">
             Honest Spices.
           </h1>
-          <h1 className="hero-line-3 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-white italic leading-tight mt-2">
+          <h1 className="hero-line-3 opacity-0 font-playfair text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground italic leading-[1.1] mt-1">
             Real Flavour.
           </h1>
 
-          <p className="hero-sub opacity-0 font-nunito text-lg text-white/75 mt-6 max-w-lg leading-relaxed">
+          <p className="hero-sub opacity-0 font-body text-base text-muted-foreground mt-8 max-w-md leading-relaxed">
             Farm-fresh cooking essentials cold-pressed and stone-ground — straight from Giri Food Productions to your kitchen.
           </p>
 
-          <div className="hero-ctas opacity-0 flex flex-wrap gap-4 mt-8">
+          <div className="hero-ctas opacity-0 flex flex-wrap gap-3 mt-8">
             <Link
               to="/products"
-              className="magnetic-btn inline-flex items-center px-7 py-3.5 rounded-full bg-giri-primary text-white font-nunito font-bold text-base shadow-lg hover:bg-orange-600 hover:scale-105 transition-all"
+              className="inline-flex items-center px-7 py-3 rounded-full bg-foreground text-background font-body font-semibold text-sm hover:bg-foreground/90 transition-all"
             >
               Shop Now →
             </Link>
             <Link
               to="/about"
-              className="magnetic-btn inline-flex items-center px-7 py-3.5 rounded-full border-2 border-white text-white font-nunito font-bold text-base hover:bg-white hover:text-giri-dark transition-all"
+              className="inline-flex items-center px-7 py-3 rounded-full border border-border text-foreground font-body font-semibold text-sm hover:bg-secondary transition-all"
             >
               Our Story
             </Link>
           </div>
 
-          <div className="hero-trust opacity-0 flex flex-wrap items-center gap-4 mt-8 text-sm text-white/60 font-nunito">
+          <div className="hero-trust opacity-0 flex flex-wrap items-center gap-4 mt-10 text-xs text-muted-foreground font-body tracking-wide">
             <span>✅ No Preservatives</span>
-            <span className="hidden sm:inline">|</span>
+            <span className="text-border">·</span>
             <span>🧪 Lab Tested</span>
-            <span className="hidden sm:inline">|</span>
+            <span className="text-border">·</span>
             <span>🚚 Pan India Delivery</span>
           </div>
         </div>
 
-        {/* Right */}
+        {/* Right side */}
         <div className="hero-right opacity-0 hidden lg:flex items-center justify-center relative">
-          <div className="w-72 h-72 xl:w-80 xl:h-80 rounded-full bg-gradient-to-br from-giri-primary to-giri-dark flex items-center justify-center relative">
-            <div className="animate-float-bob text-[100px] leading-none select-none">
-              🫙
-            </div>
-            <span className="absolute top-[-10px] text-4xl animate-float-bob" style={{ animationDelay: "0.5s" }}>🌶️</span>
-            <span className="absolute bottom-[-10px] text-3xl animate-float-bob" style={{ animationDelay: "1s" }}>🌿</span>
+          <div className="w-72 h-72 xl:w-80 xl:h-80 rounded-full bg-secondary flex items-center justify-center relative border border-border">
+            <div className="animate-float-bob text-[80px] leading-none select-none">🫙</div>
+            <span className="absolute top-[-10px] text-3xl animate-float-bob" style={{ animationDelay: "0.5s" }}>🌶️</span>
+            <span className="absolute bottom-[-10px] text-2xl animate-float-bob" style={{ animationDelay: "1s" }}>🌿</span>
 
-            {/* Orbiting icons */}
-            {orbitIcons.map((icon, i) => (
+            {["🌱", "🥜", "🌻", "🥥"].map((icon, i) => (
               <span
                 key={i}
-                className="absolute text-2xl"
+                className="absolute text-xl"
                 style={{
-                  animation: `orbit 8s linear infinite`,
-                  animationDelay: `${i * -2}s`,
+                  animation: `orbit 10s linear infinite`,
+                  animationDelay: `${i * -2.5}s`,
                   top: "50%",
                   left: "50%",
-                  marginTop: "-14px",
-                  marginLeft: "-14px",
+                  marginTop: "-12px",
+                  marginLeft: "-12px",
                 }}
               >
                 {icon}
@@ -137,9 +121,8 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/50 animate-bounce-arrow">
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-muted-foreground/40 animate-bounce-arrow">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" /></svg>
       </div>
     </section>
   );

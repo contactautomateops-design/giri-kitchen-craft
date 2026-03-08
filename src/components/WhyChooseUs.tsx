@@ -16,11 +16,11 @@ const WhyChooseUs = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(".why-left", { x: -80, opacity: 0 }, {
+      gsap.fromTo(".why-left", { x: -60, opacity: 0 }, {
         x: 0, opacity: 1, duration: 0.8, ease: "power3.out",
         scrollTrigger: { trigger: sectionRef.current, start: "top 80%" },
       });
-      gsap.fromTo(".why-right", { x: 80, opacity: 0 }, {
+      gsap.fromTo(".why-right", { x: 60, opacity: 0 }, {
         x: 0, opacity: 1, duration: 0.8, ease: "power3.out",
         scrollTrigger: { trigger: sectionRef.current, start: "top 80%" },
       });
@@ -29,50 +29,48 @@ const WhyChooseUs = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="why-us" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-        {/* Left */}
+    <section ref={sectionRef} id="why-us" className="py-24 bg-secondary/50">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div className="why-left">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-giri-primary/10 text-giri-primary font-nunito font-bold text-sm mb-4">
+          <span className="inline-block px-3 py-1 rounded-full border border-border text-muted-foreground font-body font-medium text-xs tracking-widest uppercase mb-4">
             Why Choose Us
           </span>
-          <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-giri-text-dark mb-8">
+          <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-foreground mb-10">
             Why Families Trust Giri Food Productions
           </h2>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {features.map((f, i) => (
-              <div key={i} className="flex gap-4 items-start border-l-4 border-giri-primary/30 pl-5">
-                <div className="w-12 h-12 flex-shrink-0 rounded-xl bg-giri-primary/10 flex items-center justify-center text-2xl">
+              <div key={i} className="flex gap-4 items-start border-l border-border pl-6">
+                <div className="w-10 h-10 flex-shrink-0 rounded-lg bg-secondary flex items-center justify-center text-xl">
                   {f.icon}
                 </div>
                 <div>
-                  <h4 className="font-nunito font-bold text-giri-text-dark text-base">{f.title}</h4>
-                  <p className="font-nunito text-sm text-giri-text-light mt-1">{f.desc}</p>
+                  <h4 className="font-body font-semibold text-foreground text-sm">{f.title}</h4>
+                  <p className="font-body text-xs text-muted-foreground mt-1 leading-relaxed">{f.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right */}
         <div className="why-right space-y-6">
-          <div className="bg-giri-dark rounded-2xl p-8 border-2 border-dashed border-giri-primary/50 text-center">
-            <p className="font-playfair text-2xl italic text-white leading-relaxed">
+          <div className="bg-foreground rounded-2xl p-10 text-center">
+            <p className="font-playfair text-xl italic text-background leading-relaxed">
               "Pure from the Earth, Straight to Your Table."
             </p>
-            <p className="font-nunito text-sm text-white/60 mt-4">— Giri Food Productions</p>
+            <p className="font-body text-xs text-background/50 mt-4 tracking-wide">— Giri Food Productions</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             {[
               { num: "5000+", label: "Happy Customers" },
               { num: "6", label: "Pure Products" },
               { num: "100%", label: "Natural" },
             ].map((s, i) => (
-              <div key={i} className="bg-giri-card-bg rounded-xl p-4 text-center border border-giri-primary/10">
-                <div className="font-playfair text-2xl font-bold text-giri-primary">{s.num}</div>
-                <div className="font-nunito text-xs text-giri-text-light mt-1">{s.label}</div>
+              <div key={i} className="bg-background rounded-xl p-4 text-center border border-border">
+                <div className="font-playfair text-xl font-bold text-foreground">{s.num}</div>
+                <div className="font-body text-[10px] text-muted-foreground mt-1 tracking-wide">{s.label}</div>
               </div>
             ))}
           </div>

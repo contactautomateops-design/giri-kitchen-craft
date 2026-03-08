@@ -23,43 +23,36 @@ const About = () => {
   }, []);
 
   return (
-    <div className="pt-24 pb-0 bg-giri-bg min-h-screen">
-      {/* Hero */}
-      <div className="max-w-3xl mx-auto px-4 text-center py-16" data-aos="fade-up">
-        <span className="inline-block px-4 py-1.5 rounded-full bg-giri-primary/10 text-giri-primary font-nunito font-bold text-sm mb-4">
+    <div className="pt-24 pb-0 bg-background min-h-screen">
+      <div className="max-w-3xl mx-auto px-6 text-center py-16" data-aos="fade-up">
+        <span className="inline-block px-3 py-1 rounded-full border border-border text-muted-foreground font-body font-medium text-xs tracking-widest uppercase mb-4">
           About Us
         </span>
-        <h1 className="font-playfair text-4xl sm:text-5xl font-bold text-giri-text-dark mb-6">
+        <h1 className="font-playfair text-4xl sm:text-5xl font-bold text-foreground mb-6">
           Our Journey of Purity
         </h1>
-        <p className="font-nunito text-giri-text-light leading-relaxed text-lg">
+        <p className="font-body text-sm text-muted-foreground leading-relaxed">
           At Giri Food Productions, we believe that great cooking begins with pure ingredients. Born from a simple idea — that families deserve food products free from chemicals and shortcuts — we've built our brand on trust, tradition, and transparency.
         </p>
       </div>
 
-      {/* Values */}
-      <div className="max-w-5xl mx-auto px-4 py-12">
-        <h2 className="font-playfair text-3xl font-bold text-giri-text-dark text-center mb-10" data-aos="fade-up">
-          Our Values
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        <h2 className="font-playfair text-2xl font-bold text-foreground text-center mb-10" data-aos="fade-up">Our Values</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {values.map((v, i) => (
-            <div key={i} className="bg-white rounded-2xl p-8 text-center shadow-sm" data-aos="fade-up" data-aos-delay={i * 100}>
-              <span className="text-4xl mb-4 inline-block">{v.icon}</span>
-              <h3 className="font-playfair text-xl font-bold text-giri-text-dark mb-2">{v.title}</h3>
-              <p className="font-nunito text-sm text-giri-text-light">{v.desc}</p>
+            <div key={i} className="bg-secondary rounded-xl p-8 text-center" data-aos="fade-up" data-aos-delay={i * 100}>
+              <span className="text-3xl mb-4 inline-block">{v.icon}</span>
+              <h3 className="font-playfair text-lg font-bold text-foreground mb-2">{v.title}</h3>
+              <p className="font-body text-xs text-muted-foreground leading-relaxed">{v.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="max-w-3xl mx-auto px-4 py-16">
-        <h2 className="font-playfair text-3xl font-bold text-giri-text-dark text-center mb-12" data-aos="fade-up">
-          Our Journey
-        </h2>
+      <div className="max-w-3xl mx-auto px-6 py-16">
+        <h2 className="font-playfair text-2xl font-bold text-foreground text-center mb-12" data-aos="fade-up">Our Journey</h2>
         <div className="relative">
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-giri-primary/20 -translate-x-1/2" />
+          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2" />
           {timeline.map((item, i) => (
             <div
               key={i}
@@ -68,13 +61,13 @@ const About = () => {
               data-aos-delay={i * 100}
             >
               <div className="w-1/2 px-6">
-                <div className="bg-white rounded-2xl p-6 shadow-sm">
-                  <span className="font-playfair text-2xl font-bold text-giri-primary">{item.year}</span>
-                  <h3 className="font-playfair text-lg font-bold text-giri-text-dark mt-2">{item.title}</h3>
-                  <p className="font-nunito text-sm text-giri-text-light mt-2">{item.desc}</p>
+                <div className="bg-secondary rounded-xl p-6">
+                  <span className="font-playfair text-xl font-bold text-foreground">{item.year}</span>
+                  <h3 className="font-playfair text-base font-bold text-foreground mt-2">{item.title}</h3>
+                  <p className="font-body text-xs text-muted-foreground mt-2 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
-              <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-giri-primary border-4 border-giri-bg" />
+              <div className="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-foreground" />
               <div className="w-1/2" />
             </div>
           ))}

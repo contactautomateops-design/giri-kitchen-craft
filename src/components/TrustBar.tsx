@@ -6,20 +6,20 @@ const trustItems = [
 ];
 
 const TrustBar = () => (
-  <section className="bg-giri-dark py-7">
-    <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0">
+  <section className="bg-foreground py-6">
+    <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
       {trustItems.map((item, i) => (
         <div
           key={i}
-          className={`flex flex-col items-center text-center py-3 ${
-            i < trustItems.length - 1 ? "md:border-r md:border-white/10" : ""
+          className={`flex flex-col items-center text-center py-2 ${
+            i < trustItems.length - 1 ? "md:border-r md:border-background/10" : ""
           }`}
           data-aos="fade-up"
           data-aos-delay={i * 100}
         >
-          <span className="text-3xl mb-2">{item.icon}</span>
-          <span className="text-white font-nunito font-bold text-sm">{item.title}</span>
-          <span className="text-white/50 font-nunito text-xs mt-1">{item.desc}</span>
+          <span className="text-2xl mb-2">{item.icon}</span>
+          <span className="text-background font-body font-semibold text-xs tracking-wide">{item.title}</span>
+          <span className="text-background/40 font-body text-[11px] mt-1">{item.desc}</span>
         </div>
       ))}
     </div>

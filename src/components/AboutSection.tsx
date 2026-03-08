@@ -42,34 +42,34 @@ const AboutSection = () => {
   }, [triggered]);
 
   return (
-    <section id="about" className="py-20 about-stripes bg-giri-bg">
-      <div className="max-w-3xl mx-auto px-4 text-center" data-aos="fade-up">
-        <span className="inline-block px-4 py-1.5 rounded-full bg-giri-primary/10 text-giri-primary font-nunito font-bold text-sm mb-4">
+    <section id="about" className="py-24 about-stripes bg-background">
+      <div className="max-w-3xl mx-auto px-6 text-center" data-aos="fade-up">
+        <span className="inline-block px-3 py-1 rounded-full border border-border text-muted-foreground font-body font-medium text-xs tracking-widest uppercase mb-4">
           Our Story
         </span>
-        <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-giri-text-dark mb-6">
+        <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-foreground mb-8">
           We Cook With Honesty
         </h2>
-        <p className="font-nunito text-giri-text-light leading-relaxed mb-4">
+        <p className="font-body text-sm text-muted-foreground leading-relaxed mb-4">
           At Giri Food Productions, we believe that great cooking begins with pure ingredients. Born from a simple idea — that families deserve food products free from chemicals and shortcuts — we've built our brand on trust, tradition, and transparency.
         </p>
-        <p className="font-nunito text-giri-text-light leading-relaxed">
+        <p className="font-body text-sm text-muted-foreground leading-relaxed">
           Our oils are cold-pressed to retain every drop of natural goodness, and our spices are stone-ground for that authentic aroma your grandmother always knew. From our farm partners to your kitchen shelf, every product carries our promise: pure, honest, and always fresh.
         </p>
       </div>
 
-      <div ref={ref} className="max-w-4xl mx-auto px-4 mt-14 grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div ref={ref} className="max-w-3xl mx-auto px-6 mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl p-5 text-center border-b-4 border-giri-primary/40 shadow-sm"
+            className="bg-secondary rounded-xl p-5 text-center"
             data-aos="fade-up"
             data-aos-delay={i * 100}
           >
-            <div className="font-playfair text-3xl font-bold text-giri-primary">
+            <div className="font-playfair text-2xl font-bold text-foreground">
               {counts[i]}{stat.suffix}
             </div>
-            <div className="font-nunito text-xs text-giri-text-light mt-2">{stat.label}</div>
+            <div className="font-body text-[10px] text-muted-foreground mt-2 tracking-wide">{stat.label}</div>
           </div>
         ))}
       </div>
