@@ -29,9 +29,51 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
-    else navigate("/");
+    setMessage("");
+
+    // First check if user exists by trying to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      setError(signInError.message);
+      setLoading(false);
+      return;
+    }
+
+    // Sign out immediately — we need OTP verification first
+    await supabase.auth.signOut();
+
+    // Generate OTP and send via n8n webhook
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
+
+    const result = await sendSignupOtp(email, otpCode, "User");
+    if (!result.success) {
+      setError(result.error || "Failed to send verification email");
+    } else {
+      setMessage("A verification code has been sent to your email!");
+      setMode("verify-login");
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyLoginOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (otp !== generatedOtp) {
+      setError("Invalid OTP. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    // OTP matched — sign in for real
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      setError(loginError.message);
+    } else {
+      navigate("/");
+    }
     setLoading(false);
   };
 
