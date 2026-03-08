@@ -195,23 +195,20 @@ const Admin = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="font-playfair text-2xl font-bold text-foreground mb-6">Admin Dashboard</h1>
 
-        <div className="flex gap-2 mb-6">
-          <button onClick={() => setTab("orders")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "orders" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <Package className="w-3.5 h-3.5 inline mr-1.5" /> Orders
-          </button>
-          <button onClick={() => setTab("coupons")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "coupons" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <Tag className="w-3.5 h-3.5 inline mr-1.5" /> Coupons
-          </button>
-          <button onClick={() => setTab("stock")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "stock" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <BoxesIcon className="w-3.5 h-3.5 inline mr-1.5" /> Stock
-          </button>
-          <button onClick={() => setTab("users")}
-            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "users" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
-            <Users className="w-3.5 h-3.5 inline mr-1.5" /> Users ({profiles.length})
-          </button>
+        <div className="flex flex-wrap gap-2 mb-6">
+          {([
+            { key: "orders", icon: Package, label: "Orders" },
+            { key: "products", icon: ShoppingBag, label: "Products" },
+            { key: "analytics", icon: BarChart3, label: "Analytics" },
+            { key: "coupons", icon: Tag, label: "Coupons" },
+            { key: "stock", icon: BoxesIcon, label: "Stock" },
+            { key: "users", icon: Users, label: `Users (${profiles.length})` },
+          ] as const).map(t => (
+            <button key={t.key} onClick={() => setTab(t.key as any)}
+              className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === t.key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+              <t.icon className="w-3.5 h-3.5 inline mr-1.5" /> {t.label}
+            </button>
+          ))}
         </div>
 
         {tab === "orders" && (
