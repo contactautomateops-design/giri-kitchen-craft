@@ -97,6 +97,11 @@ const Admin = () => {
     fetchOrders();
   };
 
+  const updateStock = async (productName: string, newStock: number) => {
+    await supabase.from("product_inventory").update({ stock: Math.max(0, newStock), updated_at: new Date().toISOString() } as any).eq("product_name", productName);
+    refetchInventory();
+  };
+
   // Manual order helpers
   const addProductToManual = (product: typeof products[0]) => {
     setManualOrder(prev => {
