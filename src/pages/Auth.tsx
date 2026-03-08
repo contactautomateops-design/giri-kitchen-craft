@@ -193,6 +193,7 @@ const Auth = () => {
           <span className="text-3xl">🌿</span>
           <h1 className="font-playfair text-2xl font-bold text-foreground mt-2">
             {mode === "login" && "Welcome Back"}
+            {mode === "verify-login" && "Verify Login"}
             {mode === "signup" && "Create Account"}
             {mode === "verify-signup" && "Verify Email"}
             {mode === "phone" && "Phone Login"}
