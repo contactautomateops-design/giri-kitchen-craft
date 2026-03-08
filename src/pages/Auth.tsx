@@ -23,7 +23,7 @@ const Auth = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user && mode !== "verify-signup" && mode !== "verify-login") navigate("/");
+    if (user && mode !== "verify-signup" && mode !== "verify-login" && mode !== "verify-forgot" && mode !== "new-password") navigate("/");
   }, [user, navigate, mode]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
