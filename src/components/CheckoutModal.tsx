@@ -15,7 +15,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<"details" | "upi" | "success">("details");
-  const [name, setName] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "cash">("upi");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [deliveryMode, setDeliveryMode] = useState<"delivery" | "pickup">("delivery");
