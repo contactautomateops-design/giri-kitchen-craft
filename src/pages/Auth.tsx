@@ -141,10 +141,19 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (error) setError(error.message);
+    const isLovableHost = window.location.hostname.endsWith(".lovable.app") || window.location.hostname.endsWith(".lovableproject.com");
+    if (isLovableHost) {
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (error) setError(error.message);
+    } else {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin },
+      });
+      if (error) setError(error.message);
+    }
     setLoading(false);
   };
 
