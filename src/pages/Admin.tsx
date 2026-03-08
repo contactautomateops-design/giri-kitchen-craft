@@ -529,6 +529,12 @@ const Admin = () => {
             ))}
           </div>
         )}
+        {tab === "products" && (
+          <AdminProducts products={dbProducts} onRefresh={refetchProducts} />
+        )}
+        {tab === "analytics" && (
+          <AdminAnalytics orders={orders} />
+        )}
       </div>
     </div>
   );
