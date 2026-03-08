@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { User, Phone, MapPin, Package, LogOut } from "lucide-react";
+import InvoiceButton from "@/components/InvoiceButton";
 
 const Profile = () => {
   const { user, loading: authLoading, signOut } = useAuth();
@@ -155,8 +156,11 @@ const Profile = () => {
                     ))}
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-border">
-                    {order.discount > 0 && <span className="font-body text-[10px] text-green-600">Coupon: {order.coupon_code} (-₹{order.discount})</span>}
-                    <span className="font-body font-bold text-sm text-primary ml-auto">₹{order.total}</span>
+                    <div className="flex items-center gap-2">
+                      {order.discount > 0 && <span className="font-body text-[10px] text-green-600">Coupon: {order.coupon_code} (-₹{order.discount})</span>}
+                      <InvoiceButton order={order} size="xs" />
+                    </div>
+                    <span className="font-body font-bold text-sm text-primary">₹{order.total}</span>
                   </div>
                 </div>
               ))

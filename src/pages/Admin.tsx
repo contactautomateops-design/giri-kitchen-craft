@@ -6,7 +6,8 @@ import { useInventory } from "@/hooks/useInventory";
 import { useProducts } from "@/hooks/useProducts";
 import AdminProducts from "@/components/AdminProducts";
 import AdminAnalytics from "@/components/AdminAnalytics";
-import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp, ShoppingBag, BarChart3 } from "lucide-react";
+import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, ChevronRight, ClipboardPlus, Minus, X, BoxesIcon, Users, ChevronDown, ChevronUp, ShoppingBag, BarChart3, Mail } from "lucide-react";
+import InvoiceButton from "@/components/InvoiceButton";
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
@@ -121,7 +122,26 @@ const Admin = () => {
 
   const updateOrderStatus = async (id: string, status: string) => {
     await supabase.from("orders").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
+    // Send email notification
+    try {
+      await supabase.functions.invoke("order-notification", {
+        body: { order_id: id, type: status === "confirmed" ? "confirmation" : status },
+      });
+    } catch (e) {
+      console.log("Notification skipped:", e);
+    }
     fetchOrders();
+  };
+
+  const sendNotification = async (orderId: string, type: string) => {
+    try {
+      await supabase.functions.invoke("order-notification", {
+        body: { order_id: orderId, type },
+      });
+      alert(`📧 ${type} notification sent!`);
+    } catch (e) {
+      console.error("Notification error:", e);
+    }
   };
 
   const updateStock = async (productName: string, newStock: number) => {
@@ -347,8 +367,16 @@ const Admin = () => {
                     ))}
                   </div>
                   <div className="flex justify-between items-center mt-2 pt-2 border-t border-border">
-                    {order.discount > 0 && <span className="font-body text-[10px] text-green-600">-₹{order.discount} ({order.coupon_code})</span>}
-                    <span className="font-body font-bold text-sm text-primary ml-auto">₹{order.total}</span>
+                    <div className="flex items-center gap-2">
+                      {order.discount > 0 && <span className="font-body text-[10px] text-green-600">-₹{order.discount} ({order.coupon_code})</span>}
+                      <InvoiceButton order={order} size="xs" />
+                      <button onClick={() => sendNotification(order.id, "confirmation")}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-border font-body text-[10px] hover:bg-secondary transition-colors"
+                        title="Send email notification">
+                        <Mail className="w-3 h-3" /> Notify
+                      </button>
+                    </div>
+                    <span className="font-body font-bold text-sm text-primary">₹{order.total}</span>
                   </div>
                 </div>
               ))}
