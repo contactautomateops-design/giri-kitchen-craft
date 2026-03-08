@@ -197,11 +197,35 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
                   <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required pattern="[0-9]{10}"
                     className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-card" placeholder="10-digit phone number" />
                 </div>
+
+                {/* Delivery Mode */}
                 <div>
-                  <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Delivery Address</label>
-                  <textarea value={address} onChange={e => setAddress(e.target.value)} required rows={3}
-                    className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-card resize-none" placeholder="Full delivery address with pincode" />
+                  <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Delivery Option</label>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setDeliveryMode("delivery")}
+                      className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${deliveryMode === "delivery" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                      🚚 Home Delivery
+                    </button>
+                    <button type="button" onClick={() => setDeliveryMode("pickup")}
+                      className={`flex-1 py-2.5 rounded-xl border font-body text-xs font-medium transition-colors ${deliveryMode === "pickup" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                      🏪 Store Pickup
+                    </button>
+                  </div>
                 </div>
+
+                {deliveryMode === "delivery" ? (
+                  <div>
+                    <label className="font-body text-xs font-semibold text-foreground block mb-1.5">Delivery Address</label>
+                    <textarea value={address} onChange={e => setAddress(e.target.value)} required rows={3}
+                      className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-card resize-none" placeholder="Full delivery address with pincode" />
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-accent/10 border border-accent/20">
+                    <p className="font-body text-xs text-foreground font-semibold mb-1">📍 Store Address</p>
+                    <p className="font-body text-xs text-muted-foreground">Giri Food Productions, Main Road, Your City</p>
+                    <p className="font-body text-[10px] text-muted-foreground mt-1">You'll be notified when your order is ready for pickup.</p>
+                  </div>
+                )}
 
                 {/* Coupon */}
                 <div>
