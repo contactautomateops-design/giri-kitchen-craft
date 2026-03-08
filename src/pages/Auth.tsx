@@ -9,7 +9,8 @@ import { Eye, EyeOff, Mail, Phone, Lock, User, ArrowLeft } from "lucide-react";
 const Auth = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "verify-login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "verify-login" | "signup" | "verify-signup" | "phone" | "otp" | "forgot" | "verify-forgot" | "new-password">("login");
+  const [newPassword, setNewPassword] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -22,7 +23,7 @@ const Auth = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user && mode !== "verify-signup" && mode !== "verify-login") navigate("/");
+    if (user && mode !== "verify-signup" && mode !== "verify-login" && mode !== "verify-forgot" && mode !== "new-password") navigate("/");
   }, [user, navigate, mode]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -178,11 +179,75 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) setError(error.message);
-    else setMessage("Check your email for a password reset link!");
+    setMessage("");
+
+    const otpCode = generateOtp();
+    setGeneratedOtp(otpCode);
+
+    const result = await sendSignupOtp(email, otpCode, "User");
+    if (!result.success) {
+      setError(result.error || "Failed to send verification email");
+    } else {
+      setMessage("A verification code has been sent to your email!");
+      setMode("verify-forgot");
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyForgotOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    if (otp !== generatedOtp) {
+      setError("Invalid OTP. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    setMessage("");
+    setMode("new-password");
+    setLoading(false);
+  };
+
+  const handleSetNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    // Sign in with old password is not possible since user forgot it.
+    // We use admin-level password update via a service role edge function or
+    // Supabase resetPasswordForEmail + updateUser flow.
+    // Since we already verified OTP, sign in with magic link approach:
+    // Actually, we need to use supabase admin to update. Let's use the
+    // resetPasswordForEmail silently then updateUser after session.
+    
+    // Strategy: send a silent reset, but since we already verified identity via OTP,
+    // we'll sign the user in first (they need to provide current password which they don't know).
+    // Best approach: use an edge function with service role to update password.
+    
+    // For now, use Supabase's resetPasswordForEmail to send a recovery email,
+    // then on the reset-password page they set the new password.
+    // BUT the user wants OTP-only flow. So let's create an edge function.
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reset-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ email, newPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed to reset password");
+      setMessage("Password updated successfully! You can now sign in.");
+      setMode("login");
+      setNewPassword("");
+      setPassword("");
+    } catch (err: any) {
+      setError(err.message);
+    }
     setLoading(false);
   };
 
@@ -199,6 +264,8 @@ const Auth = () => {
             {mode === "phone" && "Phone Login"}
             {mode === "otp" && "Enter OTP"}
             {mode === "forgot" && "Reset Password"}
+            {mode === "verify-forgot" && "Verify Email"}
+            {mode === "new-password" && "New Password"}
           </h1>
           <p className="font-body text-sm text-muted-foreground mt-1">Giri Food Productions</p>
         </div>
@@ -424,7 +491,60 @@ const Auth = () => {
                 </div>
                 <button type="submit" disabled={loading}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
-                  {loading ? "Sending..." : "Send Reset Link"}
+                  {loading ? "Sending..." : "Send Verification Code"}
+                </button>
+              </form>
+            </>
+          )}
+
+          {mode === "verify-forgot" && (
+            <>
+              <button onClick={() => { setMode("forgot"); setOtp(""); setError(""); setMessage(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Back
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Enter the 6-digit code sent to <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleVerifyForgotOtp} className="space-y-4">
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} required maxLength={6}
+                  className="w-full px-4 py-3 rounded-xl border border-border font-body text-sm text-center tracking-[0.5em] focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                  placeholder="------" />
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Verifying..." : "Verify Code"}
+                </button>
+                <button type="button" onClick={handleForgotPassword} disabled={loading}
+                  className="w-full py-2 font-body text-xs text-primary hover:underline">
+                  Resend Code
+                </button>
+              </form>
+            </>
+          )}
+
+          {mode === "new-password" && (
+            <>
+              <button onClick={() => { setMode("forgot"); setOtp(""); setError(""); setMessage(""); setNewPassword(""); }}
+                className="flex items-center gap-1 font-body text-xs text-muted-foreground hover:text-foreground mb-4">
+                <ArrowLeft className="w-3 h-3" /> Start over
+              </button>
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                Set a new password for <span className="font-semibold text-foreground">{email}</span>
+              </p>
+              <form onSubmit={handleSetNewPassword} className="space-y-4">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input type={showPassword ? "text" : "password"} value={newPassword} onChange={e => setNewPassword(e.target.value)} required minLength={6}
+                    className="w-full pl-10 pr-10 py-3 rounded-xl border border-border font-body text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-background"
+                    placeholder="New password (min 6 chars)" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-body font-semibold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/25 disabled:opacity-50">
+                  {loading ? "Updating..." : "Update Password"}
                 </button>
               </form>
             </>
