@@ -205,6 +205,10 @@ const Admin = () => {
             className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "stock" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
             <BoxesIcon className="w-3.5 h-3.5 inline mr-1.5" /> Stock
           </button>
+          <button onClick={() => setTab("users")}
+            className={`px-4 py-2 rounded-xl font-body text-sm font-medium transition-colors ${tab === "users" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+            <Users className="w-3.5 h-3.5 inline mr-1.5" /> Users ({profiles.length})
+          </button>
         </div>
 
         {tab === "orders" && (
