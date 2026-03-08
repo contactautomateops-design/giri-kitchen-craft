@@ -8,8 +8,9 @@ import { Plus, Trash2, Package, Tag, ToggleLeft, ToggleRight, ChevronLeft, Chevr
 
 const Admin = () => {
   const { user, isAdmin, loading: authLoading } = useAuth();
+  const { inventory, refetch: refetchInventory } = useInventory();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"coupons" | "orders">("orders");
+  const [tab, setTab] = useState<"coupons" | "orders" | "stock">("orders");
   const [coupons, setCoupons] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [showAdd, setShowAdd] = useState(false);
