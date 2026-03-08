@@ -36,11 +36,14 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
+
+    // Sign out any existing session to prevent auto-redirect
+    await supabase.auth.signOut();
 
     // Generate OTP and send to n8n webhook
     const otpCode = generateOtp();
