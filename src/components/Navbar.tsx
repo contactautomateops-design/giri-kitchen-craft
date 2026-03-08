@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
-import { ShoppingCart } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { ShoppingCart, User, LogIn, Shield } from "lucide-react";
 import CartDrawer from "./CartDrawer";
 import CheckoutModal from "./CheckoutModal";
 
@@ -19,7 +20,9 @@ const Navbar = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const { count } = useCart();
+  const { user, isAdmin } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -71,7 +74,21 @@ const Navbar = () => {
               ))}
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {isAdmin && (
+                <Link to="/admin" className="p-1.5 rounded-lg hover:bg-secondary transition-colors" title="Admin">
+                  <Shield className="w-4 h-4 text-primary" />
+                </Link>
+              )}
+              {user ? (
+                <Link to="/profile" className="p-1.5 rounded-lg hover:bg-secondary transition-colors" title="Profile">
+                  <User className="w-4 h-4 text-foreground" />
+                </Link>
+              ) : (
+                <Link to="/auth" className="p-1.5 rounded-lg hover:bg-secondary transition-colors" title="Sign In">
+                  <LogIn className="w-4 h-4 text-foreground" />
+                </Link>
+              )}
               <button className="relative p-1" onClick={() => setCartOpen(true)}>
                 <ShoppingCart className="w-4 h-4 text-foreground" />
                 {count > 0 && (
@@ -112,6 +129,20 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
+            {user ? (
+              <Link to="/profile" className="block font-body font-medium text-sm py-2 text-muted-foreground hover:text-primary">
+                My Account
+              </Link>
+            ) : (
+              <Link to="/auth" className="block font-body font-medium text-sm py-2 text-primary font-semibold">
+                Sign In
+              </Link>
+            )}
+            {isAdmin && (
+              <Link to="/admin" className="block font-body font-medium text-sm py-2 text-primary">
+                Admin Dashboard
+              </Link>
+            )}
           </div>
         </div>
       </nav>
