@@ -94,7 +94,7 @@ const CheckoutModal = ({ open, onClose }: CheckoutModalProps) => {
         coupon_code: couponApplied ? couponCode.toUpperCase() : null,
         customer_name: name,
         customer_phone: phone,
-        delivery_address: address,
+        delivery_address: deliveryMode === "pickup" ? "STORE PICKUP" : address,
         upi_id: upiId,
       }).select().single();
 
