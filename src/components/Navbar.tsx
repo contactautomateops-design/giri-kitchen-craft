@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCart } from "@/contexts/CartContext";
-import { useAuth } from "@/hooks/useAuth";
-import { ShoppingCart, User, LogIn, Shield } from "lucide-react";
-import CartDrawer from "./CartDrawer";
-import CheckoutModal from "./CheckoutModal";
+import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -17,12 +12,7 @@ const navLinks = [
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const { count } = useCart();
-  const { user, isAdmin } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -40,11 +30,6 @@ const Navbar = () => {
       }
     }
     setMenuOpen(false);
-  };
-
-  const handleCheckout = () => {
-    setCartOpen(false);
-    setCheckoutOpen(true);
   };
 
   return (
@@ -75,33 +60,11 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              {isAdmin && (
-                <Link to="/admin" className="p-1.5 rounded-lg hover:bg-secondary transition-colors" title="Admin">
-                  <Shield className="w-4 h-4 text-primary" />
-                </Link>
-              )}
-              {user ? (
-                <Link to="/profile" className="p-1.5 rounded-lg hover:bg-secondary transition-colors" title="Profile">
-                  <User className="w-4 h-4 text-foreground" />
-                </Link>
-              ) : (
-                <Link to="/auth" className="p-1.5 rounded-lg hover:bg-secondary transition-colors" title="Sign In">
-                  <LogIn className="w-4 h-4 text-foreground" />
-                </Link>
-              )}
-              <button className="relative p-1" onClick={() => setCartOpen(true)}>
-                <ShoppingCart className="w-4 h-4 text-foreground" />
-                {count > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center font-bold">
-                    {count}
-                  </span>
-                )}
-              </button>
               <Link
                 to="/products"
                 className="hidden sm:inline-flex items-center px-5 py-2 rounded-full bg-primary text-primary-foreground font-body font-medium text-xs tracking-wide hover:brightness-110 transition-all shadow-md shadow-primary/20"
               >
-                Order Now
+                View Products
               </Link>
 
               <button
@@ -129,26 +92,9 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            {user ? (
-              <Link to="/profile" className="block font-body font-medium text-sm py-2 text-muted-foreground hover:text-primary">
-                My Account
-              </Link>
-            ) : (
-              <Link to="/auth" className="block font-body font-medium text-sm py-2 text-primary font-semibold">
-                Sign In
-              </Link>
-            )}
-            {isAdmin && (
-              <Link to="/admin" className="block font-body font-medium text-sm py-2 text-primary">
-                Admin Dashboard
-              </Link>
-            )}
           </div>
         </div>
       </nav>
-
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} onCheckout={handleCheckout} />
-      <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
     </>
   );
 };
